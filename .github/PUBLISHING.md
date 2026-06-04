@@ -11,6 +11,17 @@ The package lives in [`library/`](../library). GitHub Actions publishes it autom
 
 ---
 
+## Commit the lockfile
+
+`library/package-lock.json` must be tracked in git (the root `.gitignore` must not exclude it). CI uses it for `npm ci` and for the npm cache in `setup-node`.
+
+```bash
+git add library/package-lock.json
+git commit -m "chore: track library package-lock for CI"
+```
+
+---
+
 ## GitHub configuration (required)
 
 ### 1. Repository secret
