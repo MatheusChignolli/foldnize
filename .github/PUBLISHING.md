@@ -7,7 +7,7 @@ The package lives in [`library/`](../library). GitHub Actions publishes it autom
 | Workflow | File | When it runs |
 | -------- | ---- | -------------- |
 | **Library CI** | `.github/workflows/library-ci.yml` | Push/PR that touch `library/**` |
-| **Publish to npm** | `.github/workflows/publish-npm.yml` | Tag push, manual run, or GitHub Release |
+| **Publish to npm** | `.github/workflows/publish-npm.yml` | GitHub Release published, or manual run |
 
 ---
 
@@ -89,31 +89,20 @@ git commit -m "chore(library): release v1.0.1"
 git push origin main
 ```
 
-### Step 3 — Trigger publish (pick one)
+### Step 3 — Publish (recommended: GitHub Release)
 
-#### Option A — Tag `foldnize-v*` (recommended)
+Pushing a tag alone does **not** run the workflow (avoids double runs when you also create a Release).
 
-Tag must match the version in `library/package.json`:
+1. GitHub → **Releases** → **Draft a new release**
+2. Choose or create tag **`foldnize-v1.0.1`** (must match `library/package.json` `version`)
+3. Publish the release — the workflow runs **once**
 
-```bash
-git tag foldnize-v1.0.1
-git push origin foldnize-v1.0.1
-```
-
-The workflow checks that `foldnize-v{tag}` equals `package.json` `version`.
-
-#### Option B — Manual run
+#### Manual run (first publish or emergencies)
 
 1. GitHub → **Actions** → **Publish foldnize to npm**
 2. **Run workflow** → branch `main` → **Run workflow**
 
-Use this for the first publish or if you do not want to use tags.
-
-#### Option C — GitHub Release
-
-1. GitHub → **Releases** → **Draft a new release**
-2. Create a release (any tag name works; version check on tag push is skipped for release-only triggers)
-3. Publishing the release runs the workflow
+No tag/version check on manual runs; `package.json` `version` is what gets published.
 
 ---
 
@@ -153,7 +142,7 @@ Then you can restrict publishes so only this workflow can publish new versions.
 | `403 Forbidden` (other) | Token cannot publish `foldnize`; verify package name ownership on npm |
 | `No bin file found at dist/bin/foldnize.js` (warn) | Harmless if `prepublishOnly` runs; the publish workflow also runs `npm run build` before `npm publish` so the bin exists when npm validates `package.json` |
 | `You cannot publish over the same version` | Bump `version` in `library/package.json` |
-| Tag / version mismatch | Push `foldnize-v1.0.1` when `package.json` says `1.0.1` |
+| Tag / version mismatch | Release tag must be `foldnize-v1.0.1` when `package.json` says `1.0.1` |
 | Environment approval pending | Approve deployment under **Actions** or disable required reviewers on `npm` environment |
 
 ---

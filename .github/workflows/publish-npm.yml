@@ -1,17 +1,12 @@
 name: Publish foldnize to npm
 
 on:
-  # Push a tag that matches the library version, e.g. foldnize-v1.0.0
-  push:
-    tags:
-      - "foldnize-v*"
+  # Publish once when a GitHub Release is published (not on tag push alone)
+  release:
+    types: [published]
 
   # Run manually from GitHub → Actions → "Publish foldnize to npm"
   workflow_dispatch:
-
-  # Optional: publish when a GitHub Release is published (tag can be any name)
-  release:
-    types: [published]
 
 permissions:
   contents: read
@@ -51,16 +46,25 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Verify tag matches package version
-        if: startsWith(github.ref, 'refs/tags/foldnize-v')
+      - name: Verify release tag matches package version
+        if: github.event_name == 'release'
         run: |
-          TAG="${GITHUB_REF#refs/tags/foldnize-v}"
-          VERSION=$(node -p "require('./package.json').version")
-          if [ "$TAG" != "$VERSION" ]; then
-            echo "Tag foldnize-v$TAG does not match library/package.json version $VERSION"
+          TAG="${{ github.event.release.tag_name }}"
+          PREFIX="foldnize-v"
+          case "$TAG" in
+            ${PREFIX}*) ;;
+            *)
+              echo "Release tag must be ${PREFIX}* (got: $TAG)"
+              exit 1
+              ;;
+          esac
+          VERSION="${TAG#${PREFIX}}"
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$VERSION" != "$PKG_VERSION" ]; then
+            echo "Release tag $TAG does not match library/package.json version $PKG_VERSION"
             exit 1
           fi
-          echo "Publishing foldnize@$VERSION"
+          echo "Publishing foldnize@$PKG_VERSION"
 
       - name: Publish to npm
         run: npm publish --provenance --access public
