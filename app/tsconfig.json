@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "node16",
+    "moduleResolution": "node16",
+    "lib": ["ES2022"],
+    "types": ["node"],
+
+    "outDir": "dist",
+    "rootDir": ".",
+
+    "sourceMap": true,
+
+    "strict": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
+  },
+  "include": ["main.ts", "preload.ts", "bridge-types.d.ts"],
+  "exclude": ["node_modules", "dist", "renderer"]
+}

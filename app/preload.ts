@@ -1,0 +1,30 @@
+import { contextBridge, ipcRenderer, type IpcRendererEvent } from "electron";
+
+import type {
+  FolderSelection,
+  FoldnizeBridge,
+  OrganizeResponse,
+} from "./bridge-types";
+import type { LogEntry, OrganizeOptions } from "foldnize";
+
+const bridge: FoldnizeBridge = {
+  platform: process.platform,
+
+  selectFolder: (): Promise<FolderSelection | null> =>
+    ipcRenderer.invoke("dialog:selectFolder"),
+
+  organize: (options: OrganizeOptions): Promise<OrganizeResponse> =>
+    ipcRenderer.invoke("organize:run", options),
+
+  onLog: (callback: (entry: LogEntry) => void): (() => void) => {
+    const listener = (_event: IpcRendererEvent, entry: LogEntry): void => {
+      callback(entry);
+    };
+    ipcRenderer.on("organize:log", listener);
+    return () => {
+      ipcRenderer.removeListener("organize:log", listener);
+    };
+  },
+};
+
+contextBridge.exposeInMainWorld("foldnize", bridge);

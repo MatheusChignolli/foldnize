@@ -1,0 +1,59 @@
+{
+  "name": "foldnize",
+  "version": "1.0.0",
+  "description": "Organize photos and videos by their embedded EXIF/QuickTime original date — three renaming modes, optional Year/Month folder sorting, dry-run preview.",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "bin": {
+    "foldnize": "./dist/bin/foldnize.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "build:watch": "tsc -p tsconfig.build.json --watch",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "tsx --test \"test/*.test.ts\"",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build && chmod +x dist/bin/foldnize.js"
+  },
+  "keywords": [
+    "files",
+    "rename",
+    "organize",
+    "media",
+    "photos",
+    "videos",
+    "exif",
+    "metadata",
+    "exiftool",
+    "ffprobe"
+  ],
+  "author": "Matheus Chignolli",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matheuschignolli/foldnize.git",
+    "directory": "library"
+  },
+  "homepage": "https://github.com/matheuschignolli/foldniz/library#readme",
+  "bugs": {
+    "url": "https://github.com/matheuschignolli/foldnize/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}

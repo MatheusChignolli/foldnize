@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self';"
+    />
+    <title>Foldnize</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <script>
+      // Set platform attribute as early as possible so CSS can adjust
+      // padding for the macOS traffic lights without a layout flash.
+      if (window.foldnize?.platform) {
+        document.documentElement.dataset.platform = window.foldnize.platform;
+      }
+    </script>
+
+    <header class="app-header">
+      <div class="app-header-bg" aria-hidden="true"></div>
+
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <img
+            src="../assets/icon.png"
+            alt=""
+            width="40"
+            height="40"
+            decoding="async"
+          />
+        </span>
+
+        <div class="brand-text">
+          <h1>Foldnize</h1>
+          <p class="tagline">
+            Tidy up folders by their media's original date.
+          </p>
+        </div>
+      </div>
+
+      <span class="version-pill" aria-label="App version">
+        <span class="version-dot" aria-hidden="true"></span>
+        v0.1.0 · draft
+      </span>
+    </header>
+
+    <main class="app-main">
+      <section class="card folder-card">
+        <h2>1. Pick a folder</h2>
+        <p class="muted">
+          Choose any folder on your computer. Foldnize will scan it recursively
+          for <code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>, and
+          <code>.mp4</code> files.
+        </p>
+
+        <div class="folder-row">
+          <button id="select-folder" class="btn btn-primary" type="button">
+            Select folder…
+          </button>
+
+          <div class="folder-info">
+            <span id="folder-path" class="folder-path muted"
+              >No folder selected</span
+            >
+            <span id="folder-count" class="folder-count"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card options-card">
+        <h2>2. Choose options</h2>
+
+        <div class="option-group">
+          <span class="option-label">Mode</span>
+          <div class="radio-group">
+            <label class="radio">
+              <input type="radio" name="mode" value="prefix" checked />
+              <div class="radio-body">
+                <strong>Prefix</strong>
+                <span class="muted"
+                  >Keeps original name, adds
+                  <code>YYYYMMDD-</code> prefix.</span
+                >
+              </div>
+            </label>
+
+            <label class="radio">
+              <input type="radio" name="mode" value="replace" />
+              <div class="radio-body">
+                <strong>Replace</strong>
+                <span class="muted"
+                  >Renames to <code>YYYYMMDD-HHMMSS.ext</code>.</span
+                >
+              </div>
+            </label>
+
+            <label class="radio">
+              <input type="radio" name="mode" value="custom" />
+              <div class="radio-body">
+                <strong>Custom</strong>
+                <span class="muted"
+                  >Renames to <code>name-YYYYMMDD-HHMMSS.ext</code>.</span
+                >
+              </div>
+            </label>
+          </div>
+
+          <div class="custom-name-row" id="custom-name-row" hidden>
+            <label for="custom-name" class="custom-name-label"
+              >Custom name</label
+            >
+            <input
+              type="text"
+              id="custom-name"
+              class="text-input"
+              placeholder="e.g. vacation, family-trip"
+              autocomplete="off"
+              spellcheck="false"
+              maxlength="60"
+            />
+            <span class="custom-name-preview muted" id="custom-name-preview"
+              >Files will become
+              <code>name-YYYYMMDD-HHMMSS.ext</code></span
+            >
+          </div>
+        </div>
+
+        <div class="option-group">
+          <label class="checkbox">
+            <input type="checkbox" id="organize-year-month" />
+            <span>
+              <strong>Sort into Year/Month folders</strong>
+              <span class="muted"
+                >Move each file into <code>YYYY/MM/</code> based on its date.
+                Existing folders are reused; missing ones are created.</span
+              >
+            </span>
+          </label>
+        </div>
+
+        <div class="option-group">
+          <label class="checkbox">
+            <input type="checkbox" id="scan-subfolders" checked />
+            <span>
+              <strong>Include files in subfolders</strong>
+              <span class="muted"
+                >Scan every subfolder recursively. Turn off to only process
+                files at the top level of the selected folder.</span
+              >
+            </span>
+          </label>
+        </div>
+
+        <div class="option-group">
+          <label class="checkbox">
+            <input type="checkbox" id="dry-run" checked />
+            <span>
+              <strong>Dry run</strong>
+              <span class="muted"
+                >Preview changes without touching any file.</span
+              >
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="card action-card">
+        <h2>3. Organize</h2>
+
+        <div
+          class="alert alert-warning"
+          id="dry-run-warning"
+          role="alert"
+          hidden
+        >
+          <span class="alert-icon" aria-hidden="true">!</span>
+          <div class="alert-body">
+            <strong>Heads up — Dry run is off.</strong>
+            <span class="muted"
+              >Files will be renamed on disk. Enable Dry run above if you just
+              want to preview the changes.</span
+            >
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button id="run" class="btn btn-accent" type="button" disabled>
+            Organize folder
+          </button>
+          <button id="clear-log" class="btn btn-ghost" type="button">
+            Clear log
+          </button>
+        </div>
+
+        <div class="summary" id="summary" hidden>
+          <div>
+            <span class="summary-label">Found</span
+            ><span id="stat-found">0</span>
+          </div>
+          <div>
+            <span class="summary-label">Renamed</span
+            ><span id="stat-renamed">0</span>
+          </div>
+          <div>
+            <span class="summary-label">Moved</span
+            ><span id="stat-moved">0</span>
+          </div>
+          <div>
+            <span class="summary-label">Skipped</span
+            ><span id="stat-skipped">0</span>
+          </div>
+        </div>
+
+        <div class="log" id="log" aria-live="polite">
+          <div class="log-empty">Logs will appear here once you run.</div>
+        </div>
+      </section>
+    </main>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>
