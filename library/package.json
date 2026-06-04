@@ -44,12 +44,16 @@
     "url": "git+https://github.com/matheuschignolli/foldnize.git",
     "directory": "library"
   },
-  "homepage": "https://github.com/matheuschignolli/foldniz/library#readme",
+  "homepage": "https://github.com/MatheusChignolli/foldnize/tree/main/library#readme",
   "bugs": {
     "url": "https://github.com/matheuschignolli/foldnize/issues"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
