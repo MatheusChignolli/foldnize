@@ -1,10 +1,14 @@
-import type { LogEntry, Mode, OrganizeSummary } from "foldnize";
+import { LogEntry, Mode, OrganizeSummary } from "foldnize";
+
+// Platform hint for CSS (macOS traffic-light padding). Must run in a module
+// script — inline scripts are blocked by CSP.
+if (window.foldnize?.platform) {
+  document.documentElement.dataset.platform = window.foldnize.platform;
+}
 
 interface RendererState {
   folderPath: string | null;
 }
-
-const INVALID_CHARS_RE = /[\\/:*?"<>|\x00-\x1f]/g;
 
 const selectBtn = document.getElementById("select-folder") as HTMLButtonElement;
 const runBtn = document.getElementById("run") as HTMLButtonElement;
@@ -18,11 +22,13 @@ const statFoundEl = document.getElementById("stat-found") as HTMLElement;
 const statRenamedEl = document.getElementById("stat-renamed") as HTMLElement;
 const statMovedEl = document.getElementById("stat-moved") as HTMLElement;
 const statSkippedEl = document.getElementById("stat-skipped") as HTMLElement;
-const modeInputs = document.querySelectorAll<HTMLInputElement>(
-  'input[name="mode"]',
-);
+const modeInputs =
+  document.querySelectorAll<HTMLInputElement>('input[name="mode"]');
 const customRow = document.getElementById("custom-name-row") as HTMLElement;
 const customInput = document.getElementById("custom-name") as HTMLInputElement;
+const customFeedback = document.getElementById(
+  "custom-name-feedback",
+) as HTMLParagraphElement;
 const customPreview = document.getElementById(
   "custom-name-preview",
 ) as HTMLElement;
@@ -38,30 +44,47 @@ const state: RendererState = {
   folderPath: null,
 };
 
+if (!window.foldnize) {
+  throw new Error("Foldnize bridge is unavailable — preload did not load.");
+}
+
 window.foldnize.onLog((entry: LogEntry) => {
   appendLog(entry);
 });
 
 selectBtn.addEventListener("click", async () => {
-  const result = await window.foldnize.selectFolder();
-  if (!result) return;
+  try {
+    const result = await window.foldnize.selectFolder();
+    if (!result) return;
 
-  state.folderPath = result.path;
-  folderPathEl.textContent = result.path;
-  folderPathEl.classList.remove("muted");
-  folderCountEl.textContent = `${result.entryCount} item(s) at top level`;
-  refreshRunButton();
+    state.folderPath = result.path;
+    folderPathEl.textContent = result.path;
+    folderPathEl.classList.remove("muted");
+    folderCountEl.textContent = `${result.entryCount} item(s) at top level`;
+    refreshRunButton();
+  } catch (error) {
+    appendLog({
+      level: "error" as LogEntry["level"],
+      message:
+        error instanceof Error
+          ? error.message
+          : "Could not open folder picker.",
+    });
+  }
 });
 
+function updateCustomNameRow(): void {
+  const isCustom = getMode() === Mode.CUSTOM;
+  customRow.hidden = !isCustom;
+  if (isCustom) {
+    customInput.focus();
+    refreshCustomNameFeedback();
+  }
+  refreshRunButton();
+}
+
 modeInputs.forEach((input) => {
-  input.addEventListener("change", () => {
-    const isCustom = getMode() === "custom";
-    customRow.hidden = !isCustom;
-    if (isCustom) {
-      customInput.focus();
-    }
-    refreshRunButton();
-  });
+  input.addEventListener("change", updateCustomNameRow);
 });
 
 dryRunEl.addEventListener("change", () => {
@@ -69,14 +92,7 @@ dryRunEl.addEventListener("change", () => {
 });
 
 customInput.addEventListener("input", () => {
-  const sanitized = sanitizeForPreview(customInput.value);
-  customInput.classList.toggle(
-    "invalid",
-    customInput.value.length > 0 && !sanitized,
-  );
-  customPreview.innerHTML = sanitized
-    ? `Files will become <code>${escapeHtml(sanitized)}-YYYYMMDD-HHMMSS.ext</code>`
-    : "Files will become <code>name-YYYYMMDD-HHMMSS.ext</code>";
+  refreshCustomNameFeedback();
   refreshRunButton();
 });
 
@@ -85,7 +101,7 @@ runBtn.addEventListener("click", async () => {
 
   const mode = getMode();
   const dryRun = dryRunEl.checked;
-  const customName = mode === "custom" ? customInput.value : undefined;
+  const customName = mode === Mode.CUSTOM ? customInput.value : undefined;
   const organizeIntoYearMonth = organizeYearMonthEl.checked;
   const scanSubfolders = scanSubfoldersEl.checked;
 
@@ -118,18 +134,54 @@ function getMode(): Mode {
   const checked = document.querySelector<HTMLInputElement>(
     'input[name="mode"]:checked',
   );
-  const value = checked?.value;
-  if (value === "replace" || value === "custom") return value as Mode;
-  return "prefix" as Mode;
+  const value = checked?.value as Mode;
+  if ([Mode.REPLACE, Mode.CUSTOM].includes(value)) return value;
+  return Mode.PREFIX;
 }
 
-function sanitizeForPreview(raw: string): string {
-  if (typeof raw !== "string") return "";
-  return raw
-    .replace(INVALID_CHARS_RE, "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/^[.\-\s]+|[.\-\s]+$/g, "");
+function getSanitizedCustomName(raw: string): string {
+  return window.foldnize.sanitizeCustomName(raw);
+}
+
+function refreshCustomNameFeedback(): void {
+  const raw = customInput.value;
+  const sanitized = getSanitizedCustomName(raw);
+  const hasText = raw.trim().length > 0;
+  const valid = sanitized.length > 0;
+  const invalid = hasText && !valid;
+
+  customInput.classList.toggle("invalid", invalid);
+  customInput.setAttribute("aria-invalid", String(invalid));
+
+  if (!hasText) {
+    customFeedback.hidden = true;
+    customFeedback.textContent = "";
+    customPreview.classList.remove("is-valid");
+    customPreview.innerHTML =
+      "Enter a name. Files will become <code>name-YYYYMMDD-HHMMSS.ext</code>";
+    return;
+  }
+
+  if (invalid) {
+    customFeedback.hidden = false;
+    customFeedback.textContent =
+      "That name can't be used. Avoid path characters (\\ / : * ? \" < > |) and names made only of dots, dashes, or spaces.";
+    customPreview.classList.remove("is-valid");
+    customPreview.innerHTML =
+      '<span class="custom-name-invalid-hint">No valid name to use.</span>';
+    return;
+  }
+
+  customFeedback.hidden = true;
+  customFeedback.textContent = "";
+
+  const wasAdjusted = raw.trim() !== sanitized;
+  const adjustedNote = wasAdjusted
+    ? ' <span class="custom-name-adjusted">(adjusted from what you typed)</span>'
+    : "";
+
+  customPreview.classList.add("is-valid");
+  customPreview.innerHTML = `Will use <strong class="used-name">${escapeHtml(sanitized)}</strong>${adjustedNote} → <code>${escapeHtml(sanitized)}-YYYYMMDD-HHMMSS.ext</code>`;
 }
 
 function escapeHtml(value: string): string {
@@ -143,7 +195,8 @@ function refreshRunButton(): void {
   const hasFolder = Boolean(state.folderPath);
   const mode = getMode();
   const customOk =
-    mode !== "custom" || sanitizeForPreview(customInput.value).length > 0;
+    mode !== Mode.CUSTOM ||
+    getSanitizedCustomName(customInput.value).length > 0;
 
   runBtn.disabled = !(hasFolder && customOk);
 }

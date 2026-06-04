@@ -5,6 +5,7 @@ import type {
   FoldnizeBridge,
   OrganizeResponse,
 } from "./bridge-types";
+import { sanitizeCustomName } from "foldnize";
 import type { LogEntry, OrganizeOptions } from "foldnize";
 
 const bridge: FoldnizeBridge = {
@@ -15,6 +16,8 @@ const bridge: FoldnizeBridge = {
 
   organize: (options: OrganizeOptions): Promise<OrganizeResponse> =>
     ipcRenderer.invoke("organize:run", options),
+
+  sanitizeCustomName: (raw: string): string => sanitizeCustomName(raw),
 
   onLog: (callback: (entry: LogEntry) => void): (() => void) => {
     const listener = (_event: IpcRendererEvent, entry: LogEntry): void => {

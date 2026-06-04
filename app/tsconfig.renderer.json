@@ -8,6 +8,6 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["renderer/**/*.ts", "bridge-types.d.ts"],
+  "include": ["renderer/**/*.ts", "bridge-types.d.ts", "window.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -17,11 +17,6 @@ export interface FoldnizeBridge {
   platform: string;
   selectFolder: () => Promise<FolderSelection | null>;
   organize: (options: OrganizeOptions) => Promise<OrganizeResponse>;
+  sanitizeCustomName: (raw: string) => string;
   onLog: (callback: (entry: LogEntry) => void) => () => void;
-}
-
-declare global {
-  interface Window {
-    foldnize: FoldnizeBridge;
-  }
 }

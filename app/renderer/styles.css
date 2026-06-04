@@ -212,6 +212,7 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  -webkit-app-region: no-drag;
 }
 
 .card {
@@ -254,6 +255,14 @@ h2 {
 }
 
 /* Buttons */
+.btn,
+input,
+label,
+textarea,
+select {
+  -webkit-app-region: no-drag;
+}
+
 .btn {
   appearance: none;
   border: 1px solid var(--border-strong);
@@ -402,11 +411,50 @@ h2 {
   font-weight: 600;
   color: var(--accent-strong);
   letter-spacing: 0.02em;
+  align-self: start;
+  padding-top: 8px;
+}
+
+.custom-name-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.custom-name-feedback {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--danger);
+}
+
+.custom-name-feedback[hidden] {
+  display: none;
 }
 
 .custom-name-preview {
-  grid-column: 1 / -1;
+  margin: 0;
   font-size: 11px;
+  line-height: 1.5;
+}
+
+.custom-name-preview.is-valid {
+  color: var(--text-muted);
+}
+
+.custom-name-preview .used-name {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.custom-name-preview .custom-name-adjusted {
+  color: var(--warn);
+  font-size: 10px;
+}
+
+.custom-name-preview .custom-name-invalid-hint {
+  color: var(--danger);
 }
 
 .text-input {
@@ -431,8 +479,13 @@ h2 {
 }
 
 .text-input.invalid {
-  border-color: rgba(248, 113, 113, 0.6);
-  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12);
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+}
+
+.text-input.invalid:focus {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.28);
 }
 
 .checkbox {

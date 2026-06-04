@@ -81,10 +81,11 @@ app.on("window-all-closed", () => {
 
 ipcMain.handle(
   "dialog:selectFolder",
-  async (): Promise<FolderSelection | null> => {
-    if (!mainWindow) return null;
+  async (event): Promise<FolderSelection | null> => {
+    const parent = BrowserWindow.fromWebContents(event.sender) ?? mainWindow;
+    if (!parent) return null;
 
-    const result = await dialog.showOpenDialog(mainWindow, {
+    const result = await dialog.showOpenDialog(parent, {
       title: "Select a folder to organize",
       properties: ["openDirectory", "createDirectory"],
       buttonLabel: "Select folder",

@@ -10,14 +10,6 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <script>
-      // Set platform attribute as early as possible so CSS can adjust
-      // padding for the macOS traffic lights without a layout flash.
-      if (window.foldnize?.platform) {
-        document.documentElement.dataset.platform = window.foldnize.platform;
-      }
-    </script>
-
     <header class="app-header">
       <div class="app-header-bg" aria-hidden="true"></div>
 
@@ -111,19 +103,29 @@
             <label for="custom-name" class="custom-name-label"
               >Custom name</label
             >
-            <input
-              type="text"
-              id="custom-name"
-              class="text-input"
-              placeholder="e.g. vacation, family-trip"
-              autocomplete="off"
-              spellcheck="false"
-              maxlength="60"
-            />
-            <span class="custom-name-preview muted" id="custom-name-preview"
-              >Files will become
-              <code>name-YYYYMMDD-HHMMSS.ext</code></span
-            >
+            <div class="custom-name-input-wrap">
+              <input
+                type="text"
+                id="custom-name"
+                class="text-input"
+                placeholder="e.g. vacation, family-trip"
+                autocomplete="off"
+                spellcheck="false"
+                maxlength="60"
+                aria-describedby="custom-name-feedback custom-name-preview"
+                aria-invalid="false"
+              />
+              <p
+                id="custom-name-feedback"
+                class="custom-name-feedback"
+                role="alert"
+                hidden
+              ></p>
+              <p class="custom-name-preview muted" id="custom-name-preview">
+                Enter a name. Files will become
+                <code>name-YYYYMMDD-HHMMSS.ext</code>
+              </p>
+            </div>
           </div>
         </div>
 
@@ -219,6 +221,6 @@
       </section>
     </main>
 
-    <script src="renderer.js"></script>
+    <script type="module" src="renderer.js"></script>
   </body>
 </html>
