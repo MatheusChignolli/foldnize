@@ -119,8 +119,8 @@ function getMode(): Mode {
     'input[name="mode"]:checked',
   );
   const value = checked?.value;
-  if (value === "replace" || value === "custom") return value;
-  return "prefix";
+  if (value === "replace" || value === "custom") return value as Mode;
+  return "prefix" as Mode;
 }
 
 function sanitizeForPreview(raw: string): string {

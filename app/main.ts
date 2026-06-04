@@ -9,6 +9,7 @@ import type {
 } from "./bridge-types";
 import type {
   LogEntry,
+  LogLevel,
   OrganizeOptions,
 } from "foldnize";
 
@@ -122,7 +123,7 @@ ipcMain.handle(
       return { ok: true, summary };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      sendLog({ level: "error", message });
+      sendLog({ level: "error" as LogLevel, message });
       return { ok: false, error: message };
     }
   },

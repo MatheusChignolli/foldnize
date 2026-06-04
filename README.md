@@ -26,15 +26,10 @@ Source code is TypeScript. Each project builds independently via `tsc` into its 
 ## How the three pieces talk
 
 - `library/` knows nothing about Electron or the landing page — pure logic, runnable from Node or any CLI.
-- `app/` depends on the library via a local `file:../library` dependency. `npm install` inside `app/` copies it into `node_modules/foldnize`.
+- `app/` depends on the published [`foldnize`](https://www.npmjs.com/package/foldnize) npm package (`^1.0.0`).
 - `landing/` is decoupled — it links to the library/app for downloads.
 
-If you're hacking on the library and want changes to reflect instantly in the app, use `npm link` instead of `file:`:
-
-```bash
-cd library && npm link
-cd ../app && npm link foldnize
-```
+When developing the library in this repo, temporarily use `file:../library` or `npm link` in `app/` — see [`app/README.md`](./app/README.md).
 
 ## Requirements
 

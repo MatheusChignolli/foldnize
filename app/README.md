@@ -2,7 +2,7 @@
 
 An Electron desktop app that organizes a folder of photos and videos by their embedded **original date** (EXIF / QuickTime metadata).
 
-This package is a thin UI shell on top of the [`foldnize`](../library) library — all of the actual file-organising logic lives there.
+This package is a thin UI shell on top of the [`foldnize`](https://www.npmjs.com/package/foldnize) npm package — all of the actual file-organising logic lives there. The library source also lives in [`../library`](../library) in this monorepo.
 
 ## Features
 
@@ -33,28 +33,23 @@ Without these tools installed, files without parseable date metadata are simply 
 ## Getting started
 
 ```bash
-# first time: install both
-cd ../library && npm install && npm run build
-cd ../app     && npm install
-
-# every time you want to launch:
+cd app
+npm install
 npm start
 ```
 
 `npm start` runs the full pipeline: `clean → tsc (main + preload) → tsc (renderer) → copy HTML/CSS/assets → electron .`.
-If you only changed the renderer or main file and skip TypeScript edits in the
-library, you can use the faster `npm run start:fast` (boots without rebuilding).
+If you only changed renderer or main files, use `npm run start:fast` (boots without rebuilding).
 
-`npm install` here resolves the local `foldnize` library via a `file:../library`
-dependency. If you change the library source, run `npm run build` over there
-first, then re-run `npm install` in this folder to refresh `node_modules/foldnize`.
+The app depends on [`foldnize`](https://www.npmjs.com/package/foldnize) from the npm registry (`^1.0.0`). Bump the version in `package.json` to pick up new releases.
 
-> Tip — during heavy library development you can swap to `npm link` so library
-> edits flow through immediately after a rebuild:
+> Tip — when developing the library in this repo, point at the local copy temporarily:
 > ```bash
-> cd ../library && npm link
-> cd ../app     && npm link foldnize
+> # in app/package.json: "foldnize": "file:../library"
+> cd ../library && npm run build
+> cd ../app && npm install
 > ```
+> Or use `npm link` after building the library.
 
 ## Scripts
 
@@ -80,7 +75,7 @@ app/
 ├── tsconfig.renderer.json    # Compiles renderer/*.ts (DOM, no Node)
 ├── scripts/
 │   └── copy-assets.mjs       # Copies HTML/CSS/icons into dist/
-├── package.json              # Depends on foldnize via "file:../library"
+├── package.json              # Depends on foldnize from npm (^1.0.0)
 ├── assets/
 │   ├── icon.svg              # Source vector (edit this, then re-export)
 │   └── icon.png              # Exported icon — dock + header (512×512)
@@ -128,7 +123,7 @@ Then point your packager at the `assets/` directory in its config.
 ## Where the business logic lives
 
 The renaming, walking, metadata reading and folder-sorting logic lives in the
-[`foldnize`](../library) package next door, fully typed:
+[`foldnize`](https://www.npmjs.com/package/foldnize) package, fully typed:
 
 ```ts
 import { organizeFolder, type OrganizeOptions } from "foldnize";
@@ -147,7 +142,7 @@ organizeFolder({
 Returns `{ found, renamed, moved, skipped }`. A file can be counted in both
 `renamed` and `moved` if it changes name *and* changes directory.
 
-See [`../library/README.md`](../library/README.md) for the full API.
+See [`../library/README.md`](../library/README.md) (or [npm](https://www.npmjs.com/package/foldnize)) for the full API.
 
 ## Possible next steps
 

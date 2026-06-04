@@ -34,7 +34,7 @@ This project follows the [Contributor Covenant 2.1](./CODE_OF_CONDUCT.md). Be ki
 ```
 foldnize/
 ├── library/        npm package `foldnize` — pure JS, zero deps, ships a CLI
-├── app/            Electron desktop app, depends on the library via file:../library
+├── app/            Electron desktop app, depends on foldnize from npm (^1.0.0)
 └── landing/        Static marketing site (plain HTML/CSS)
 ```
 
@@ -149,14 +149,14 @@ npm run start:fast # boots electron without rebuilding (when you only changed no
 
 **Hacking on the library at the same time:**
 
-`npm install` resolves `"foldnize": "file:../library"` by **copying** the library's `dist/` into `app/node_modules/foldnize`. So library source changes won't be visible until you rebuild AND re-install — or use `npm link`:
+The app normally installs `foldnize` from npm. To test unpublished library changes, temporarily set `"foldnize": "file:../library"` in `app/package.json`, run `npm run build` in `library/`, then `npm install` in `app/` — or use `npm link`:
 
 ```bash
-cd library && npm link
+cd library && npm run build && npm link
 cd ../app  && npm link foldnize
 ```
 
-After linking, you still need to `npm run build` in `library/` for the compiled output to refresh. The link just removes the install step.
+After linking, rebuild `library/` whenever you change library source.
 
 **Project layout:**
 
@@ -316,7 +316,7 @@ The library is at `library/package.json`. To cut a release:
    npm publish --access public   # prepublishOnly hook rebuilds dist/ for you
    ```
 
-The Electron app pins the library via `file:../library`, so app releases pick up library changes via the next `npm install` automatically — no version bump dance required across packages.
+Bump `foldnize` in `app/package.json` when you want the app to pick up a new library release from npm.
 
 ## License
 
