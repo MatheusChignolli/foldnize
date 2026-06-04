@@ -1,4 +1,5 @@
-import { LogEntry, Mode, OrganizeSummary } from "foldnize";
+import { Mode } from "foldnize";
+import type { LogEntry, OrganizeSummary } from "foldnize";
 
 // Platform hint for CSS (macOS traffic-light padding). Must run in a module
 // script — inline scripts are blocked by CSP.
