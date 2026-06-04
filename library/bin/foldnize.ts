@@ -5,9 +5,25 @@ import path from "node:path";
 
 import {
   organizeFolder,
+  LogLevel,
+  Mode,
   type LogEntry,
-  type Mode,
 } from "../src";
+
+function parseMode(value: string | undefined): Mode {
+  switch (value) {
+    case "prefix":
+      return Mode.PREFIX;
+    case "replace":
+      return Mode.REPLACE;
+    case "custom":
+      return Mode.CUSTOM;
+    default:
+      throw new Error(
+        `Invalid --mode value: "${value ?? ""}". Use --mode=prefix | replace | custom.`,
+      );
+  }
+}
 
 interface CliOptions {
   root: string;
@@ -27,7 +43,7 @@ interface CliOptions {
 function parseArgs(argv: readonly string[]): CliOptions {
   const args: CliOptions = {
     root: process.cwd(),
-    mode: "prefix",
+    mode: Mode.PREFIX,
     customName: undefined,
     dryRun: false,
     organizeIntoYearMonth: false,
@@ -50,13 +66,7 @@ function parseArgs(argv: readonly string[]): CliOptions {
     } else if (arg.startsWith("--mode=")) {
       const rawValue = arg.split("=")[1];
       const value = rawValue?.trim().toLowerCase();
-      if (value === "prefix" || value === "replace" || value === "custom") {
-        args.mode = value;
-      } else {
-        throw new Error(
-          `Invalid --mode value: "${value ?? ""}". Use --mode=prefix | replace | custom.`,
-        );
-      }
+      args.mode = parseMode(value);
     } else if (arg.startsWith("--custom-name=") || arg.startsWith("--name=")) {
       const value = arg.split("=").slice(1).join("=").trim();
       if (!value) {
@@ -169,25 +179,25 @@ function paint(color: ColorName, text: string): string {
 
 function logEntry({ level, message }: LogEntry): void {
   switch (level) {
-    case "info":
+    case LogLevel.INFO:
       console.log(paint("dim", message));
       break;
-    case "renamed":
+    case LogLevel.RENAMED:
       console.log(paint("green", "✓ ") + message);
       break;
-    case "moved":
+    case LogLevel.MOVED:
       console.log(paint("cyan", "→ ") + message);
       break;
-    case "dry":
+    case LogLevel.DRY:
       console.log(paint("blue", "· ") + message);
       break;
-    case "skip":
+    case LogLevel.SKIP:
       console.log(paint("yellow", "↷ ") + paint("dim", message));
       break;
-    case "error":
+    case LogLevel.ERROR:
       console.error(paint("red", "✗ ") + message);
       break;
-    case "done":
+    case LogLevel.DONE:
       console.log("\n" + paint("bold", paint("green", message)));
       break;
     default: {
