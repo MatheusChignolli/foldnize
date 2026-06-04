@@ -48,6 +48,9 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Build
+        run: npm run build
+
       - name: Verify tag matches package version
         if: startsWith(github.ref, 'refs/tags/foldnize-v')
         run: |

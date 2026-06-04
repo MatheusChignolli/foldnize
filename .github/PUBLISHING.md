@@ -39,8 +39,9 @@ Add this under **Settings → Secrets and variables → Actions → Repository s
 3. Choose **Granular Access Token** (recommended):
    - **Packages and scopes:** Read and write for `foldnize` (or all packages if this is your only publish).
    - **Organizations:** none, unless you publish under a scope.
+   - If your npm account has **2FA required for publishing**, enable **Bypass 2FA for automation** on this token (otherwise CI gets `403 Forbidden`).
    - Expiration: your choice (90 days or custom).
-4. Or use **Classic** → type **Automation** (for CI/CD).
+4. Or use **Classic** → type **Automation** (for CI/CD; bypasses publish 2FA).
 5. Copy the token once — you will not see it again.
 6. In GitHub: **Repository → Settings → Secrets and variables → Actions → New repository secret**
    - Name: `NPM_TOKEN`
@@ -122,8 +123,9 @@ Use this for the first publish or if you do not want to use tags.
 2. `npm ci` in `library/`  
 3. `npm run typecheck`  
 4. `npm test`  
-5. `npm publish --provenance --access public`  
-   - `prepublishOnly` builds `dist/` and sets the CLI executable bit  
+5. `npm run build`  
+6. `npm publish --provenance --access public`  
+   - `prepublishOnly` rebuilds `dist/` and sets the CLI executable bit  
    - Only `dist/` and `README.md` are included in the tarball (`files` in `package.json`)
 
 ---
@@ -147,7 +149,9 @@ Then you can restrict publishes so only this workflow can publish new versions.
 | Error | Likely fix |
 | ----- | ---------- |
 | `ENEEDAUTH` / 401 | `NPM_TOKEN` missing, expired, or wrong permissions |
-| `403 Forbidden` | Token cannot publish `foldnize`; verify package name ownership on npm |
+| `403 Forbidden` — *Two-factor authentication or granular access token with bypass 2fa enabled is required* | Regenerate `NPM_TOKEN`: use a **Classic Automation** token, or a **Granular** token with **Bypass 2FA for automation** and publish access to `foldnize`. A normal **Publish** or **Read-only** token will not work in CI. |
+| `403 Forbidden` (other) | Token cannot publish `foldnize`; verify package name ownership on npm |
+| `No bin file found at dist/bin/foldnize.js` (warn) | Harmless if `prepublishOnly` runs; the publish workflow also runs `npm run build` before `npm publish` so the bin exists when npm validates `package.json` |
 | `You cannot publish over the same version` | Bump `version` in `library/package.json` |
 | Tag / version mismatch | Push `foldnize-v1.0.1` when `package.json` says `1.0.1` |
 | Environment approval pending | Approve deployment under **Actions** or disable required reviewers on `npm` environment |
