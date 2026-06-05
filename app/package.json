@@ -30,6 +30,15 @@
   ],
   "author": "Matheus Chignolli",
   "license": "MIT",
+  "homepage": "https://github.com/MatheusChignolli/foldnize/tree/main/app#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatheusChignolli/foldnize.git",
+    "directory": "app"
+  },
+  "bugs": {
+    "url": "https://github.com/MatheusChignolli/foldnize/issues"
+  },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^25.9.1",

@@ -94,7 +94,7 @@ git push origin main
 Pushing a tag alone does **not** run the workflow (avoids double runs when you also create a Release).
 
 1. GitHub → **Releases** → **Draft a new release**
-2. Choose or create tag **`foldnize-v1.0.1`** (must match `library/package.json` `version`)
+2. Choose or create tag **`foldnize-v1.0.1`** (must match `library/package.json` `version`). Use **`foldnize-v*`** for the library — not `foldnize-app-v*` (app releases skip this workflow).
 3. Publish the release — the workflow runs **once**
 
 #### Manual run (first publish or emergencies)

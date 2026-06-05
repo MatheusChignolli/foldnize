@@ -41,7 +41,7 @@ Workflow: [`.github/workflows/release-app.yml`](./workflows/release-app.yml)
 
 1. Bump `app/package.json` `version`
 2. GitHub → **Releases** → **Draft a new release**
-3. Tag: **`foldnize-app-v1.0.0`** (must match `app/package.json` version)
+3. Tag: **`foldnize-app-v1.0.0`** (must match `app/package.json` version; does not trigger the library npm publish workflow)
 4. Publish — builds macOS, Windows, Linux and attaches installers to **that release**
 
 Or run **Release Foldnize app** manually from Actions (workflow_dispatch). Manual runs build artifacts but only attach to a release when triggered by `release: published`.

@@ -19,6 +19,14 @@ defaults:
 jobs:
   publish:
     name: Publish to npm
+    # Library only — skip app releases (foldnize-app-v*)
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'release' &&
+        startsWith(github.event.release.tag_name, 'foldnize-v') &&
+        !startsWith(github.event.release.tag_name, 'foldnize-app-v')
+      )
     runs-on: ubuntu-latest
     environment: npm
 
