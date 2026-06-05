@@ -1,0 +1,133 @@
+name: Release Foldnize app
+
+on:
+  release:
+    types: [published]
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "App version to verify in app/package.json (e.g. 0.1.0)"
+        required: true
+        default: "0.1.0"
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    working-directory: app
+
+jobs:
+  verify-version:
+    name: Verify version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read package version
+        id: version
+        working-directory: app
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "App version: $VERSION"
+
+      - name: Match GitHub Release tag
+        if: github.event_name == 'release'
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          EXPECTED="foldnize-app-v${VERSION}"
+          if [ "$TAG" != "$EXPECTED" ]; then
+            echo "Release tag must be $EXPECTED (got $TAG)"
+            exit 1
+          fi
+
+      - name: Match manual input
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          INPUT="${{ github.event.inputs.version }}"
+          if [ "$INPUT" != "$VERSION" ]; then
+            echo "Input version $INPUT does not match app/package.json ($VERSION)"
+            exit 1
+          fi
+
+  build:
+    name: Build (${{ matrix.os }})
+    needs: verify-version
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            platform: macos
+            electron_flags: --mac
+          - os: windows-latest
+            platform: windows
+            electron_flags: --win
+          - os: ubuntu-latest
+            platform: linux
+            electron_flags: --linux
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Package app
+        env:
+          # Unsigned builds — fine for open-source distribution.
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: npm run build && npm run icons:build && npx electron-builder ${{ matrix.electron_flags }} --publish never
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: foldnize-${{ matrix.platform }}
+          path: |
+            app/release/*.dmg
+            app/release/*.zip
+            app/release/*.exe
+            app/release/*.AppImage
+            app/release/*.deb
+          if-no-files-found: error
+
+  publish:
+    name: Publish release assets
+    needs: [verify-version, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all platform artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: List artifacts
+        run: find artifacts -type f | sort
+
+      - name: Upload to GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: foldnize-app-v${{ needs.verify-version.outputs.version }}
+          files: artifacts/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -73,20 +73,19 @@
             folder sorting, and a safe dry-run preview. Zero cloud.
           </p>
 
-          <div class="hero-ctas">
+          <div class="hero-ctas" id="downloads">
             <a
-              href="https://github.com/matheuschignolli/foldnize"
+              id="download-primary"
+              href="https://github.com/MatheusChignolli/foldnize/releases/latest"
               class="btn btn-primary"
-              target="_blank"
-              rel="noopener"
             >
-              Get Foldnize
+              Download Foldnize
               <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M5 3l5 5-5 5" />
               </svg>
             </a>
             <a
-              href="https://github.com/matheuschignolli/foldnize"
+              href="https://github.com/MatheusChignolli/foldnize"
               class="btn btn-ghost"
               target="_blank"
               rel="noopener"
@@ -96,6 +95,29 @@
               </svg>
               View on GitHub
             </a>
+          </div>
+
+          <div class="download-platforms">
+            <span id="download-detected-os" class="download-detected"></span>
+            <div class="download-links" aria-label="Download for your operating system">
+              <a
+                data-download-platform="macos"
+                href="https://github.com/MatheusChignolli/foldnize/releases/latest"
+                >macOS</a
+              >
+              <span class="download-sep" aria-hidden="true">·</span>
+              <a
+                data-download-platform="windows"
+                href="https://github.com/MatheusChignolli/foldnize/releases/latest"
+                >Windows</a
+              >
+              <span class="download-sep" aria-hidden="true">·</span>
+              <a
+                data-download-platform="linux"
+                href="https://github.com/MatheusChignolli/foldnize/releases/latest"
+                >Linux</a
+              >
+            </div>
           </div>
 
           <div class="hero-preview" role="img" aria-label="Example file renames">
@@ -436,5 +458,7 @@
         </span>
       </div>
     </footer>
+
+    <script src="download.js" defer></script>
   </body>
 </html>

@@ -1,0 +1,46 @@
+appId: com.foldnize.desktop
+productName: Foldnize
+copyright: Copyright © Matheus Chignolli
+
+directories:
+  output: release
+  buildResources: assets
+
+files:
+  - dist/**/*
+  - package.json
+
+asar: true
+
+mac:
+  category: public.app-category.productivity
+  icon: assets/icon.png
+  target:
+    - dmg
+    - zip
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: null
+  entitlementsInherit: null
+
+win:
+  icon: assets/icon.png
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+linux:
+  icon: assets/icon.png
+  category: Utility
+  maintainer: Matheus Chignolli
+  target:
+    - AppImage
+    - deb
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+
+publish: null

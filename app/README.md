@@ -144,12 +144,25 @@ Returns `{ found, renamed, moved, skipped }`. A file can be counted in both
 
 See [`../library/README.md`](../library/README.md) (or [npm](https://www.npmjs.com/package/foldnize)) for the full API.
 
+## Desktop releases
+
+Package installers for macOS, Windows, and Linux:
+
+```bash
+npm run dist        # current OS
+npm run dist:mac    # macOS (.dmg, .zip)
+npm run dist:win    # Windows (NSIS)
+npm run dist:linux  # Linux (AppImage, .deb)
+```
+
+CI publishes installers to **GitHub Releases** (tag `foldnize-app-v*`). The landing page links to those assets; per-asset download counts are on the GitHub Release page — see [`.github/APP_RELEASES.md`](../.github/APP_RELEASES.md).
+
 ## Possible next steps
 
 - Persist the last-used folder via `electron-store`.
 - Surface a real progress bar driven by the `onLog` stream.
 - Clean up empty source folders after move operations (opt-in).
-- Package distributable builds with `electron-builder`.
+- Apple code signing + notarization for smoother macOS installs.
 
 ## License
 
