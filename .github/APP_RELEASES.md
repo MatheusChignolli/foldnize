@@ -41,7 +41,7 @@ Workflow: [`.github/workflows/release-app.yml`](./workflows/release-app.yml)
 
 1. Bump `app/package.json` `version`
 2. GitHub → **Releases** → **Draft a new release**
-3. Tag: **`foldnize-app-v0.1.0`** (must match `app/package.json` version)
+3. Tag: **`foldnize-app-v1.0.0`** (must match `app/package.json` version)
 4. Publish — builds macOS, Windows, Linux and attaches installers to **that release**
 
 Or run **Release Foldnize app** manually from Actions (workflow_dispatch). Manual runs build artifacts but only attach to a release when triggered by `release: published`.
@@ -70,14 +70,14 @@ Open the release on GitHub — each asset shows its own download count (macOS / 
 
 ```bash
 # 1. Bump app version
-cd app && npm version patch   # 0.1.0 → 0.1.1
+cd app && npm version patch   # 1.0.0 → 1.0.1
 
 # 2. Commit
 git add app/package.json app/package-lock.json
-git commit -m "chore(app): release v0.1.1"
+git commit -m "chore(app): release v1.0.1"
 git push
 
-# 3. GitHub Release with tag foldnize-app-v0.1.1
+# 3. GitHub Release with tag foldnize-app-v1.0.1
 ```
 
 ---
