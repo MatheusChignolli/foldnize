@@ -17,7 +17,7 @@ Each folder has its own `package.json`, its own `README.md`, and can be develope
 
 | Folder      | What it is                                                                       | How to run                                            |
 | ----------- | -------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `library/`  | The `foldnize` npm package — **TypeScript**, Node ≥ 18, zero runtime deps, ships a CLI. | `cd library && npm install && npm run build && npm test` |
+| `library/`  | The `foldnize` npm package — **TypeScript**, Node ≥ 22, zero runtime deps, ships a CLI. | `cd library && npm install && npm run build && npm test` |
 | `app/`      | The Electron UI (**TypeScript**) on top of the library.                          | `cd app && npm install && npm start`                  |
 | `landing/`  | Static HTML/CSS landing page.                                                    | Open `landing/index.html` in a browser.               |
 
@@ -33,11 +33,12 @@ When developing the library in this repo, temporarily use `file:../library` or `
 
 ## Requirements
 
-- Node.js **18+**
+- Node.js **22+**
 - macOS, Linux, or Windows
+- Supported formats: `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
 - Optional but recommended:
-  - `exiftool` — `brew install exiftool` — needed for photo metadata
-  - `ffprobe` — `brew install ffmpeg` — fallback for `.mp4` files
+  - `exiftool` — `brew install exiftool` — photos, audio, and most video metadata
+  - `ffprobe` — `brew install ffmpeg` — fallback for `.mp4` and `.mov` video files
 
 ## License
 

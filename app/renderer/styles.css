@@ -85,7 +85,7 @@ h2 {
    lights float over our content. Reserve enough horizontal
    clearance so they never crowd the brand mark. */
 [data-platform="darwin"] .app-header {
-  padding-left: 140px;
+  padding-left: 100px;
 }
 
 .app-header::after {
@@ -180,8 +180,44 @@ h2 {
   letter-spacing: 0.005em;
 }
 
-.version-pill {
+.header-actions {
   -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.header-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.header-link-btn:hover {
+  color: var(--accent-strong);
+  border-color: rgba(108, 140, 255, 0.4);
+  background: var(--accent-soft);
+}
+
+.header-link-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.version-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -302,17 +338,6 @@ select {
 .btn-primary:hover:not(:disabled) {
   background: rgba(108, 140, 255, 0.22);
   border-color: rgba(108, 140, 255, 0.65);
-}
-
-.btn-accent {
-  background: linear-gradient(180deg, var(--accent-strong), var(--accent));
-  border-color: transparent;
-  color: #0b0f1c;
-  font-weight: 600;
-}
-
-.btn-accent:hover:not(:disabled) {
-  filter: brightness(1.05);
 }
 
 .btn-ghost {

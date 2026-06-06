@@ -11,6 +11,7 @@ import {
   shouldSkipAlreadyFormatted,
   ensureUniquePath,
   VALID_EXTENSIONS,
+  formatSupportedExtensions,
   Mode,
   type DateParts,
 } from "../src/naming";
@@ -41,6 +42,13 @@ test("VALID_EXTENSIONS includes every supported media type", () => {
   }
 
   assert.equal(VALID_EXTENSIONS.size, expected.length);
+});
+
+test("formatSupportedExtensions lists every extension in sorted order", () => {
+  assert.equal(
+    formatSupportedExtensions(),
+    ".jpeg, .jpg, .mov, .mp3, .mp4, .png",
+  );
 });
 
 test("VALID_EXTENSIONS rejects common non-media extensions", () => {

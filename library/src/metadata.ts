@@ -118,10 +118,8 @@ function realReader(filePath: string): DateParts | null {
     if (fromExiftool) return fromExiftool;
   }
 
-  if (
-    path.extname(filePath).toLowerCase() === ".mp4" &&
-    hasCommand("ffprobe")
-  ) {
+  const ext = path.extname(filePath).toLowerCase();
+  if ((ext === ".mp4" || ext === ".mov") && hasCommand("ffprobe")) {
     const fromFfprobe = getDateFromFfprobe(filePath);
     if (fromFfprobe) return fromFfprobe;
   }

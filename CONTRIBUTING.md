@@ -46,11 +46,11 @@ The top-level [`README.md`](./README.md) has the quick map; this document drills
 
 | Tool         | Why                                              | How to install (macOS)         |
 | ------------ | ------------------------------------------------ | ------------------------------ |
-| Node.js 18+  | Runtime for the library, CLI, and Electron app   | `brew install node` or [nvm](https://github.com/nvm-sh/nvm) |
+| Node.js 22+  | Runtime for the library, CLI, and Electron app   | `brew install node` or [nvm](https://github.com/nvm-sh/nvm) |
 | npm 9+       | Ships with Node                                  | —                              |
 | Git          | Source control                                   | `xcode-select --install`       |
 | `exiftool`   | Reads embedded photo metadata at runtime         | `brew install exiftool`        |
-| `ffprobe`    | Fallback metadata reader for `.mp4` files        | `brew install ffmpeg`          |
+| `ffprobe`    | Fallback metadata reader for `.mp4` and `.mov` video files | `brew install ffmpeg`          |
 
 `exiftool` and `ffprobe` are only needed when actually running the file organiser end-to-end. The unit tests in `library/test/` use an internal test seam (`__setDateReaderForTests`) so they don't depend on either tool being installed.
 
@@ -224,7 +224,7 @@ The codebase is **TypeScript** end-to-end (library, CLI, Electron main, preload,
 
 - **TypeScript ≥ 5** (we currently track `^6`). Strict mode is on (`"strict": true`, plus a few extras like `noImplicitOverride` and `forceConsistentCasingInFileNames`).
 - **CommonJS** for the library (and Electron main/preload). The renderer is plain script-context JS — no module loader, just `<script src="renderer.js">`.
-- **Node ≥ 18**. Use modern syntax freely: optional chaining, nullish coalescing, `node:` import prefixes, top-level `await` is fine in scripts (not in library code), etc.
+- **Node ≥ 22**. Use modern syntax freely: optional chaining, nullish coalescing, `node:` import prefixes, top-level `await` is fine in scripts (not in library code), etc.
 - **Public API surface** in `library/src/index.ts` should have explicit interfaces and JSDoc on every export. Internal helpers can rely on inference.
 - **Indentation**: 2 spaces. Match the surrounding file.
 - **Quotes**: double quotes (`"`).

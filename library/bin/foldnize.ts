@@ -7,6 +7,7 @@ import {
   organizeFolder,
   LogLevel,
   Mode,
+  formatSupportedExtensions,
   type LogEntry,
 } from "../src";
 
@@ -116,10 +117,13 @@ Examples:
   foldnize --root=./photos --mode=custom --custom-name=vacation
   foldnize --root=./photos --year-month --no-subfolders
 
+Supported formats:
+  ${formatSupportedExtensions()}
+
 Requirements:
-  • Node.js 18+
-  • exiftool       (brew install exiftool)    — required for photo metadata
-  • ffprobe        (brew install ffmpeg)      — fallback for .mp4 files
+  • Node.js 22+
+  • exiftool       (brew install exiftool)    — photos, audio, and most video metadata
+  • ffprobe        (brew install ffmpeg)      — fallback for .mp4 and .mov video files
 
 Files without parseable date metadata are silently skipped.
 `.trim(),

@@ -25,6 +25,11 @@ export const VALID_EXTENSIONS: ReadonlySet<string> = new Set([
   ".png",
 ]);
 
+/** Sorted extensions for display, e.g. `.jpeg`, `.jpg`, `.mov`, … */
+export function formatSupportedExtensions(): string {
+  return [...VALID_EXTENSIONS].sort().join(", ");
+}
+
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

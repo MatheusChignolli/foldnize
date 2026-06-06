@@ -19,6 +19,9 @@ const bridge: FoldnizeBridge = {
 
   sanitizeCustomName: (raw: string): string => sanitizeCustomName(raw),
 
+  openExternal: (url: string): Promise<void> =>
+    ipcRenderer.invoke("shell:openExternal", url),
+
   onLog: (callback: (entry: LogEntry) => void): (() => void) => {
     const listener = (_event: IpcRendererEvent, entry: LogEntry): void => {
       callback(entry);

@@ -1,11 +1,25 @@
-import { Mode } from "foldnize";
-import type { LogEntry, OrganizeSummary } from "foldnize";
+/// <reference path="../window.d.ts" />
+import type { LogEntry, Mode, OrganizeSummary } from "foldnize";
+
+/** Runtime mode strings — cannot import `Mode` from foldnize in the renderer (no bundler). */
+const MODE = {
+  PREFIX: "prefix" as Mode,
+  REPLACE: "replace" as Mode,
+  CUSTOM: "custom" as Mode,
+};
 
 // Platform hint for CSS (macOS traffic-light padding). Must run in a module
 // script — inline scripts are blocked by CSP.
 if (window.foldnize?.platform) {
   document.documentElement.dataset.platform = window.foldnize.platform;
 }
+
+const websiteLinkBtn = document.getElementById(
+  "website-link",
+) as HTMLButtonElement;
+websiteLinkBtn.addEventListener("click", () => {
+  void window.foldnize.openExternal("https://foldnize.com");
+});
 
 interface RendererState {
   folderPath: string | null;
@@ -75,7 +89,7 @@ selectBtn.addEventListener("click", async () => {
 });
 
 function updateCustomNameRow(): void {
-  const isCustom = getMode() === Mode.CUSTOM;
+  const isCustom = getMode() === MODE.CUSTOM;
   customRow.hidden = !isCustom;
   if (isCustom) {
     customInput.focus();
@@ -102,7 +116,7 @@ runBtn.addEventListener("click", async () => {
 
   const mode = getMode();
   const dryRun = dryRunEl.checked;
-  const customName = mode === Mode.CUSTOM ? customInput.value : undefined;
+  const customName = mode === MODE.CUSTOM ? customInput.value : undefined;
   const organizeIntoYearMonth = organizeYearMonthEl.checked;
   const scanSubfolders = scanSubfoldersEl.checked;
 
@@ -135,9 +149,9 @@ function getMode(): Mode {
   const checked = document.querySelector<HTMLInputElement>(
     'input[name="mode"]:checked',
   );
-  const value = checked?.value as Mode;
-  if ([Mode.REPLACE, Mode.CUSTOM].includes(value)) return value;
-  return Mode.PREFIX;
+  const value = checked?.value;
+  if (value === "replace" || value === "custom") return value as Mode;
+  return MODE.PREFIX;
 }
 
 function getSanitizedCustomName(raw: string): string {
@@ -196,7 +210,7 @@ function refreshRunButton(): void {
   const hasFolder = Boolean(state.folderPath);
   const mode = getMode();
   const customOk =
-    mode !== Mode.CUSTOM ||
+    mode !== MODE.CUSTOM ||
     getSanitizedCustomName(customInput.value).length > 0;
 
   runBtn.disabled = !(hasFolder && customOk);

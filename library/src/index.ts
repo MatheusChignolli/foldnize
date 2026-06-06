@@ -5,6 +5,11 @@ export type {
   OrganizeOptions,
   OrganizeSummary,
 } from "./organize";
-export { sanitizeCustomName, VALID_EXTENSIONS, Mode } from "./naming";
+export {
+  sanitizeCustomName,
+  VALID_EXTENSIONS,
+  formatSupportedExtensions,
+  Mode,
+} from "./naming";
 export type { DateParts } from "./naming";
 export { formatDateToParts, getOriginalFileDateParts } from "./metadata";

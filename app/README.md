@@ -20,13 +20,14 @@ This package is a thin UI shell on top of the [`foldnize`](https://www.npmjs.com
 - Real-time streaming log of every action.
 - Safe collision handling (`-1`, `-2`, … suffixes).
 - Skips already-formatted files automatically.
+- Supported formats: `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 22+
 - Optional but recommended on macOS:
-  - [`exiftool`](https://exiftool.org/) — required to read photo metadata. `brew install exiftool`
-  - [`ffprobe`](https://ffmpeg.org/ffprobe.html) — fallback for `.mp4` files. `brew install ffmpeg`
+  - [`exiftool`](https://exiftool.org/) — photos, audio, and most video metadata. `brew install exiftool`
+  - [`ffprobe`](https://ffmpeg.org/ffprobe.html) — fallback for `.mp4` and `.mov` video files. `brew install ffmpeg`
 
 Without these tools installed, files without parseable date metadata are simply skipped.
 

@@ -21,9 +21,11 @@ npm install foldnize
 `foldnize` shells out to read embedded metadata. Install one or both:
 
 ```bash
-brew install exiftool       # photos + most formats — best coverage
-brew install ffmpeg         # ffprobe — fallback for .mp4
+brew install exiftool       # photos, audio, and most video metadata
+brew install ffmpeg         # ffprobe — fallback for .mp4 and .mov video files
 ```
+
+Supported formats: `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
 
 Files without parseable date metadata are silently skipped — never crash.
 
@@ -89,7 +91,8 @@ import {
   sanitizeCustomName, // (unknown) => string — same rules as in CLI
   getOriginalFileDateParts, // (filePath: string) => DateParts | null
   formatDateToParts, // (dateString: string | null) => DateParts | null
-  VALID_EXTENSIONS, // ReadonlySet<".mp4" | ".jpg" | ".jpeg" | ".png">
+  VALID_EXTENSIONS, // ReadonlySet — see formatSupportedExtensions()
+  formatSupportedExtensions, // () => ".jpeg", ".jpg", ".mov", …
   type DateParts,
   type Mode,
   type LogEntry,
@@ -132,7 +135,7 @@ npx foldnize --root=./photos --year-month --no-subfolders
 
 ## Requirements
 
-- Node.js **18+**
+- Node.js **22+**
 
 ## Publishing
 

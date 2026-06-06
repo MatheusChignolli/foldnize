@@ -26,16 +26,41 @@
 
         <div class="brand-text">
           <h1>Foldnize</h1>
-          <p class="tagline">
-            Tidy up folders by their media's original date.
-          </p>
+          <p class="tagline">Tidy up folders by their media's original date.</p>
         </div>
       </div>
 
-      <span class="version-pill" aria-label="App version">
-        <span class="version-dot" aria-hidden="true"></span>
-        v1.0.0
-      </span>
+      <div class="header-actions">
+        <button
+          id="website-link"
+          type="button"
+          class="header-link-btn"
+          aria-label="Open foldnize.com"
+          title="foldnize.com"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path
+              d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+            />
+            <path
+              d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+            />
+          </svg>
+        </button>
+
+        <span class="version-pill" aria-label="App version">
+          <span class="version-dot" aria-hidden="true"></span>
+          v1.0.0
+        </span>
+      </div>
     </header>
 
     <main class="app-main">
@@ -43,8 +68,8 @@
         <h2>1. Pick a folder</h2>
         <p class="muted">
           Choose any folder on your computer. Foldnize will scan it recursively
-          for <code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>, and
-          <code>.mp4</code> files.
+          for <code>.jpeg</code>, <code>.jpg</code>, <code>.mov</code>,
+          <code>.mp3</code>, <code>.mp4</code>, and <code>.png</code> files.
         </p>
 
         <div class="folder-row">
@@ -188,7 +213,7 @@
         </div>
 
         <div class="action-row">
-          <button id="run" class="btn btn-accent" type="button" disabled>
+          <button id="run" class="btn btn-primary" type="button" disabled>
             Organize folder
           </button>
           <button id="clear-log" class="btn btn-ghost" type="button">

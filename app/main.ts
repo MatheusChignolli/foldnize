@@ -1,4 +1,11 @@
-import { app, BrowserWindow, ipcMain, dialog, nativeImage } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  nativeImage,
+  shell,
+} from "electron";
 import path from "node:path";
 import fs from "node:fs";
 
@@ -78,6 +85,13 @@ app.on("window-all-closed", () => {
     app.quit();
   }
 });
+
+ipcMain.handle(
+  "shell:openExternal",
+  async (_event, url: string): Promise<void> => {
+    await shell.openExternal(url);
+  },
+);
 
 ipcMain.handle(
   "dialog:selectFolder",
