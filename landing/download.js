@@ -120,5 +120,10 @@
   }
 
   setFallbackLinks();
-  resolveDownloadLinks();
+
+  if (document.readyState === "complete") {
+    resolveDownloadLinks();
+  } else {
+    window.addEventListener("load", resolveDownloadLinks, { once: true });
+  }
 })();
