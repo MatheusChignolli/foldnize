@@ -1,0 +1,5 @@
+# Static landing site — Netlify reads this from the repo root.
+
+[build]
+  base = "landing"
+  publish = "."

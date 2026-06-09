@@ -9,7 +9,7 @@ The Electron app lives in [`app/`](../app). Installers are built for **macOS**, 
 | Piece | Service | Role |
 | ----- | ------- | ---- |
 | Installers | **GitHub Releases** | Host `.dmg`, `.exe`, `.AppImage` (~110 MB each) |
-| Landing site | Any static host (Pages, Netlify, Vercel, etc.) | Marketing + download buttons |
+| Landing site | **Netlify** (`landing/`) + **Cloudflare Web Analytics** | Marketing + download buttons — see [`landing/README.md`](../landing/README.md) |
 | Download stats | **GitHub Release page** | Per-asset download counts on each release |
 | CI builds | GitHub Actions | Build all three OS targets |
 
@@ -29,7 +29,7 @@ npm run dist:linux  # Linux only
 
 Artifacts land in `app/release/`.
 
-Unsigned macOS builds show Gatekeeper warnings — expected for open-source until you add Apple code signing.
+macOS builds are **signed and notarized** when GitHub secrets are configured — see **[MACOS_SIGNING.md](./MACOS_SIGNING.md)**. Without those secrets, builds stay unsigned and Gatekeeper will block them.
 
 ---
 
@@ -86,7 +86,7 @@ git push
 
 | Issue | Fix |
 | ----- | --- |
-| macOS “app is damaged” / Gatekeeper | Unsigned build — right-click → Open, or add code signing later |
+| macOS Gatekeeper / “could not verify” | Add signing secrets per [MACOS_SIGNING.md](./MACOS_SIGNING.md) and publish a new release |
 | Landing buttons go to releases page only | No `foldnize-app-v*` release with assets yet — publish a release and wait for CI |
 | Missing platform on release | That OS build failed — check Actions logs |
 | GitHub API rate limit on landing | Rare for normal traffic; falls back to releases page |
