@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#12151e" />
+      <stop offset="100%" stop-color="#0a0c12" />
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#c9d0e2" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="35%" r="45%">
+      <stop offset="0%" stop-color="#6c8cff" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#6c8cff" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+  <rect x="120" y="180" width="96" height="96" rx="22" fill="#161922" stroke="#343b4d" stroke-width="2" />
+  <path
+    d="M144 228a12 12 0 0 1 12-12h36l14 14h66a12 12 0 0 1 12 12v4H144v-18z"
+    fill="#3d4f8f"
+    stroke="#8fa4e8"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M132 246h132a12 12 0 0 1 12 12v60a12 12 0 0 1-12 12H132a12 12 0 0 1-12-12V258a12 12 0 0 1 12-12z"
+    fill="#5a72d6"
+    stroke="#a8baff"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+  <text
+    x="120"
+    y="360"
+    fill="url(#title)"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+    font-size="72"
+    font-weight="800"
+    letter-spacing="-2"
+  >
+    Foldnize
+  </text>
+  <text
+    x="120"
+    y="430"
+    fill="#8a92a6"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+    font-size="34"
+    font-weight="500"
+  >
+    Tidy folders, by their original date.
+  </text>
+  <text
+    x="120"
+    y="500"
+    fill="#6c8cff"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+    font-size="24"
+    font-weight="600"
+  >
+    Free · Local-first · macOS · Windows · Linux
+  </text>
+</svg>

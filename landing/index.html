@@ -3,25 +3,148 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Foldnize — Tidy folders, by their original date.</title>
+    <title>Foldnize — Organize Photos &amp; Videos by Original Date | Free Desktop App</title>
     <meta
       name="description"
-      content="Foldnize organizes your photos and videos by their embedded EXIF and QuickTime metadata. Local-first, three renaming modes, dry-run preview, open source."
+      content="Foldnize is a free, local-first desktop app that renames and sorts photos, videos, and audio by EXIF and metadata dates. Dry-run preview for macOS, Windows, and Linux."
+    />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta name="author" content="Matheus Chignolli" />
+    <meta name="application-name" content="Foldnize" />
+    <meta
+      name="keywords"
+      content="Foldnize, photo organizer, video organizer, EXIF rename, metadata rename, file renamer, desktop app, local-first, dry run, year month folders"
     />
     <meta name="theme-color" content="#0a0c12" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="canonical" href="https://foldnize.com/" />
+    <link rel="home" href="https://foldnize.com/" />
+    <link rel="alternate" hreflang="en" href="https://foldnize.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://foldnize.com/" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" title="Sitemap" />
 
     <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/icon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Foldnize" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://foldnize.com/" />
+    <meta
+      property="og:title"
+      content="Foldnize — Organize Photos &amp; Videos by Original Date"
+    />
+    <meta
+      property="og:description"
+      content="Free, local-first desktop app that renames and sorts photos, videos, and audio by EXIF and metadata dates. Safe dry-run preview. macOS, Windows, and Linux."
+    />
+    <meta property="og:image" content="https://foldnize.com/assets/og-image.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Foldnize — Tidy folders, by their original date. Free desktop app for macOS, Windows, and Linux."
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Foldnize — Organize Photos &amp; Videos by Original Date"
+    />
+    <meta
+      name="twitter:description"
+      content="Free, local-first desktop app that renames and sorts media by EXIF and metadata dates. Dry-run preview. macOS, Windows, and Linux."
+    />
+    <meta name="twitter:image" content="https://foldnize.com/assets/og-image.svg" />
+    <meta
+      name="twitter:image:alt"
+      content="Foldnize — Tidy folders, by their original date. Free desktop app for macOS, Windows, and Linux."
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://foldnize.com/#website",
+            "url": "https://foldnize.com/",
+            "name": "Foldnize",
+            "description": "Organize photos and videos by their original metadata date.",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://foldnize.com/#webpage",
+            "url": "https://foldnize.com/",
+            "name": "Foldnize — Organize Photos & Videos by Original Date",
+            "description": "Foldnize is a free, local-first desktop app that renames and sorts photos, videos, and audio by EXIF and metadata dates.",
+            "isPartOf": { "@id": "https://foldnize.com/#website" },
+            "about": { "@id": "https://foldnize.com/#software" },
+            "inLanguage": "en",
+            "primaryImageOfPage": {
+              "@type": "ImageObject",
+              "url": "https://foldnize.com/assets/og-image.svg",
+              "width": 1200,
+              "height": 630
+            }
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://foldnize.com/#software",
+            "name": "Foldnize",
+            "url": "https://foldnize.com/",
+            "applicationCategory": "UtilitiesApplication",
+            "applicationSubCategory": "File Management",
+            "operatingSystem": "macOS, Windows, Linux",
+            "softwareVersion": "1.0.0",
+            "description": "Local-first desktop app that renames and organizes photos, videos, and audio using embedded EXIF and QuickTime metadata.",
+            "downloadUrl": "https://github.com/MatheusChignolli/foldnize/releases/latest",
+            "installUrl": "https://github.com/MatheusChignolli/foldnize/releases/latest",
+            "screenshot": "https://foldnize.com/assets/og-image.svg",
+            "featureList": "Three renaming modes, Year/Month folder sorting, dry-run preview, EXIF and QuickTime metadata, local-first processing",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            },
+            "license": "https://opensource.org/licenses/MIT",
+            "isAccessibleForFree": true,
+            "author": { "@id": "https://foldnize.com/#organization" }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://foldnize.com/#organization",
+            "name": "Foldnize",
+            "url": "https://foldnize.com/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://foldnize.com/assets/icon.svg"
+            },
+            "sameAs": ["https://github.com/matheuschignolli/foldnize"]
+          }
+        ]
+      }
+    </script>
 
     <link rel="preconnect" href="https://api.github.com" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <!-- ───────────────────────── HEADER ───────────────────────── -->
     <header class="site-header">
       <div class="container header-inner">
-        <a href="#top" class="logo" aria-label="Foldnize home">
+        <a href="/" class="logo" aria-label="Foldnize home">
           <span class="logo-mark" aria-hidden="true">
-            <img src="assets/icon.svg" alt="" width="36" height="36" decoding="async" />
+            <img src="assets/icon.svg" alt="Foldnize" width="36" height="36" decoding="async" />
           </span>
           <span class="logo-text">Foldnize</span>
         </a>
@@ -33,7 +156,7 @@
             href="https://github.com/matheuschignolli/foldnize"
             class="nav-cta"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
             aria-label="GitHub"
           >
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
@@ -45,9 +168,9 @@
       </div>
     </header>
 
-    <main id="top">
+    <main id="main-content">
       <!-- ───────────────────────── HERO ───────────────────────── -->
-      <section class="hero">
+      <section class="hero" aria-labelledby="hero-title">
         <div class="hero-orb" aria-hidden="true"></div>
         <div class="hero-grid" aria-hidden="true"></div>
 
@@ -57,7 +180,7 @@
             v1.0.0 · Open source · Local-first
           </span>
 
-          <h1 class="hero-title">
+          <h1 class="hero-title" id="hero-title">
             Tidy folders,<br />
             by their <span class="gradient-text">original date</span>.
           </h1>
@@ -84,7 +207,7 @@
               href="https://github.com/MatheusChignolli/foldnize"
               class="btn btn-ghost"
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
             >
               <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
                 <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.52-1.34-1.27-1.69-1.27-1.69-1.04-.71.08-.69.08-.69 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.73-1.52-2.55-.29-5.24-1.28-5.24-5.71 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.96 10.96 0 0 1 5.72 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.44-2.7 5.42-5.27 5.7.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.55 4.57-1.52 7.85-5.83 7.85-10.91C23.5 5.65 18.35.5 12 .5Z" />
@@ -163,10 +286,10 @@
       </section>
 
       <!-- ───────────────────────── FEATURES ───────────────────────── -->
-      <section id="features" class="features">
+      <section id="features" class="features" aria-labelledby="features-title">
         <div class="container">
           <p class="section-eyebrow">Features</p>
-          <h2 class="section-title">
+          <h2 class="section-title" id="features-title">
             Everything you need.<br />
             <span class="muted">Nothing you don't.</span>
           </h2>
@@ -276,10 +399,10 @@
       </section>
 
       <!-- ───────────────────────── DOCS ───────────────────────── -->
-      <section id="docs" class="docs">
+      <section id="docs" class="docs" aria-labelledby="docs-title">
         <div class="container">
           <p class="section-eyebrow">Docs</p>
-          <h2 class="section-title">
+          <h2 class="section-title" id="docs-title">
             Up and running<br />
             <span class="gradient-text">in 30 seconds.</span>
           </h2>
@@ -387,7 +510,7 @@
             href="https://github.com/matheuschignolli/foldnize#readme"
             class="docs-deep-link"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
           >
             Read the full docs on GitHub
             <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -402,9 +525,9 @@
     <footer class="site-footer">
       <div class="container footer-inner">
         <div class="footer-brand">
-          <a href="#top" class="logo small" aria-label="Foldnize home">
+          <a href="/" class="logo small" aria-label="Foldnize home">
             <span class="logo-mark" aria-hidden="true">
-              <img src="assets/icon.svg" alt="" width="30" height="30" decoding="async" />
+              <img src="assets/icon.svg" alt="Foldnize" width="30" height="30" decoding="async" loading="lazy" />
             </span>
             <span class="logo-text">Foldnize</span>
           </a>
@@ -422,19 +545,19 @@
             <a
               href="https://github.com/matheuschignolli/foldnize"
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
               >GitHub</a
             >
             <a
               href="https://github.com/matheuschignolli/foldnize#readme"
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
               >README</a
             >
             <a
               href="https://github.com/matheuschignolli/foldnize/issues"
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
               >Issues</a
             >
           </div>
@@ -443,7 +566,7 @@
             <a
               href="https://github.com/matheuschignolli/foldnize/blob/main/README.md"
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
               >MIT</a
             >
           </div>
