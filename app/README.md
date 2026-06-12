@@ -126,6 +126,17 @@ For **packaged builds** (e.g. via `electron-builder`):
 - Windows: `assets/icon.png`
 - Linux: `assets/icon.png` (256×256 or 512×512)
 
+### macOS DMG install window
+
+The drag-and-drop installer background matches the app’s dark theme. Edit
+`assets/dmg-background.svg`, then run:
+
+```bash
+npm run dmg:build
+```
+
+`dist:mac` runs this automatically before packaging.
+
 Then point your packager at the `assets/` directory in its config.
 
 ## Where the business logic lives
