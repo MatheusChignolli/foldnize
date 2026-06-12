@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#12151e" />
@@ -12,23 +12,19 @@
       <stop offset="0%" stop-color="#6c8cff" stop-opacity="0.35" />
       <stop offset="100%" stop-color="#6c8cff" stop-opacity="0" />
     </radialGradient>
+    <clipPath id="logo-clip">
+      <rect x="120" y="180" width="96" height="96" rx="22" />
+    </clipPath>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)" />
   <rect width="1200" height="630" fill="url(#glow)" />
-  <rect x="120" y="180" width="96" height="96" rx="22" fill="#161922" stroke="#343b4d" stroke-width="2" />
-  <path
-    d="M144 228a12 12 0 0 1 12-12h36l14 14h66a12 12 0 0 1 12 12v4H144v-18z"
-    fill="#3d4f8f"
-    stroke="#8fa4e8"
-    stroke-width="2"
-    stroke-linejoin="round"
-  />
-  <path
-    d="M132 246h132a12 12 0 0 1 12 12v60a12 12 0 0 1-12 12H132a12 12 0 0 1-12-12V258a12 12 0 0 1 12-12z"
-    fill="#5a72d6"
-    stroke="#a8baff"
-    stroke-width="2"
-    stroke-linejoin="round"
+  <image
+    href="logo.png"
+    x="120"
+    y="180"
+    width="96"
+    height="96"
+    clip-path="url(#logo-clip)"
   />
   <text
     x="120"

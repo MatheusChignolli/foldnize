@@ -304,7 +304,7 @@ pre code {
   width: 36px;
   height: 36px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .logo-text {
@@ -319,6 +319,7 @@ pre code {
 .logo.small .logo-mark img {
   width: 30px;
   height: 30px;
+  border-radius: 8px;
 }
 
 .site-nav {

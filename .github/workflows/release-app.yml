@@ -93,7 +93,7 @@ jobs:
         env:
           # Unsigned builds — fine for open-source distribution.
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
-        run: npm run build && npm run icons:build && npx electron-builder ${{ matrix.electron_flags }} --publish never
+        run: npm run build && npm run icons:build && npm run dmg:build && npx electron-builder ${{ matrix.electron_flags }} --publish never
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

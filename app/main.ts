@@ -29,7 +29,10 @@ let mainWindow: BrowserWindow | null = null;
 function setDockIcon(): void {
   if (process.platform !== "darwin" || !app.dock) return;
 
-  const iconPath = path.join(__dirname, "assets", "icon.png");
+  const assetsDir = path.join(__dirname, "assets");
+  const icnsPath = path.join(assetsDir, "icon.icns");
+  const pngPath = path.join(assetsDir, "icon.png");
+  const iconPath = fs.existsSync(icnsPath) ? icnsPath : pngPath;
   if (!fs.existsSync(iconPath)) return;
 
   try {

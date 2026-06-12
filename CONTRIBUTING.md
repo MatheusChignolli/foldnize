@@ -172,7 +172,7 @@ app/
 │   ├── index.html           UI markup (copied to dist/renderer/ at build time)
 │   ├── styles.css
 │   └── renderer.ts
-├── assets/                  icon.png — dock + header
+├── assets/                  Foldnize.icon — macOS dock; logo.png — UI
 └── dist/                    Build output, what Electron actually loads (gitignored)
 ```
 

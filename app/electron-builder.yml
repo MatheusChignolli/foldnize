@@ -14,7 +14,7 @@ asar: true
 
 mac:
   category: public.app-category.productivity
-  icon: assets/icon.png
+  icon: assets/icon.icns
   target:
     - dmg
     - zip
@@ -22,6 +22,21 @@ mac:
   gatekeeperAssess: false
   entitlements: null
   entitlementsInherit: null
+
+dmg:
+  title: Foldnize
+  background: dmg-background.png
+  iconSize: 128
+  window:
+    width: 540
+    height: 380
+  contents:
+    - x: 135
+      y: 245
+    - x: 405
+      y: 245
+      type: link
+      path: /Applications
 
 win:
   icon: assets/icon.png

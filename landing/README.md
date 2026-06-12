@@ -45,4 +45,7 @@ After deploying, submit the sitemap in [Google Search Console](https://search.go
 | `download.js` | OS-aware GitHub Release download links |
 | `robots.txt` | Search engine crawl directives |
 | `sitemap.xml` | XML sitemap |
+| `assets/logo.png` | Brand logo (header, footer) |
+| `assets/favicon-32.png` | Browser favicon |
+| `assets/apple-touch-icon.png` | iOS home screen icon |
 | `assets/og-image.svg` | Open Graph / Twitter preview image |
