@@ -2,12 +2,39 @@
  * OS-aware download buttons — resolves the latest foldnize-app-v* GitHub Release
  * and links each platform to the matching installer (.dmg / .exe / .AppImage).
  *
- * Download counts per asset are on the GitHub Release page.
+ * Shown only on desktop macOS, Windows, and Linux (not mobile or Android).
  */
 (function () {
   const GITHUB_REPO = "MatheusChignolli/foldnize";
   const RELEASE_TAG_PREFIX = "foldnize-app-v";
   const RELEASES_PAGE = `https://github.com/${GITHUB_REPO}/releases/latest`;
+
+  function isMobileDevice() {
+    const ua = navigator.userAgent;
+
+    if (/Android/i.test(ua)) return true;
+    if (/iPhone|iPod/i.test(ua)) return true;
+    if (/iPad/i.test(ua)) return true;
+    if (navigator.maxTouchPoints > 1 && /Macintosh/i.test(ua)) return true;
+    if (/Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua)) return true;
+
+    return false;
+  }
+
+  function detectDesktopPlatform() {
+    if (isMobileDevice()) return null;
+
+    const ua = navigator.userAgent;
+    const platform = navigator.platform || "";
+
+    if (/Win/i.test(platform) || /Windows/i.test(ua)) return "windows";
+    if (/Mac/i.test(platform) || /Macintosh/i.test(ua)) return "macos";
+    if ((/Linux/i.test(platform) || /Linux/i.test(ua)) && !/Android/i.test(ua)) {
+      return "linux";
+    }
+
+    return null;
+  }
 
   function pickAsset(assets, platform) {
     const matchers = {
@@ -18,32 +45,27 @@
     return assets.find((asset) => matchers[platform](asset.name));
   }
 
-  function detectPlatform() {
-    const ua = navigator.userAgent;
-    const platform = navigator.platform || "";
-
-    if (/Mac|iPhone|iPad|iPod/i.test(platform) || /Macintosh/i.test(ua)) {
-      return "macos";
-    }
-    if (/Win/i.test(platform) || /Windows/i.test(ua)) {
-      return "windows";
-    }
-    if (/Linux/i.test(platform) || /Linux/i.test(ua)) {
-      return "linux";
-    }
-    return null;
-  }
-
   const primary = document.getElementById("download-primary");
+  const platforms = document.querySelector(".download-platforms");
   const detected = document.getElementById("download-detected-os");
   const links = document.querySelectorAll("[data-download-platform]");
 
-  const os = detectPlatform();
+  const os = detectDesktopPlatform();
   const labels = {
     macos: "macOS",
     windows: "Windows",
     linux: "Linux",
   };
+
+  function hideDownloads() {
+    if (primary) primary.hidden = true;
+    if (platforms) platforms.hidden = true;
+  }
+
+  if (!os) {
+    hideDownloads();
+    return;
+  }
 
   function setFallbackLinks() {
     if (primary) primary.href = RELEASES_PAGE;
@@ -74,7 +96,7 @@
         if (asset) urls[platform] = asset.browser_download_url;
       }
 
-      if (primary && os && urls[os]) {
+      if (primary && urls[os]) {
         primary.href = urls[os];
         primary.textContent = "";
         const label = document.createElement("span");
@@ -115,7 +137,7 @@
     }
   }
 
-  if (detected && os) {
+  if (detected) {
     detected.textContent = `Detected: ${labels[os]}`;
   }
 
