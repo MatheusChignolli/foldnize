@@ -1,7 +1,7 @@
 {
   "name": "foldnize-app",
   "productName": "Foldnize",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Foldnize desktop app — Electron UI on top of the foldnize library.",
   "main": "dist/main.js",
