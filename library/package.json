@@ -1,6 +1,6 @@
 {
   "name": "foldnize",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Organize photos and videos by their embedded EXIF/QuickTime original date — three renaming modes, optional Year/Month folder sorting, dry-run preview.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
