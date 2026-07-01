@@ -110,6 +110,239 @@ svg {
   color: var(--text);
 }
 
+/* ─────────────────────────── Content pages ─────────────────────────── */
+
+.page-main {
+  padding: 88px 0 104px;
+}
+
+.error-page {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.error-page .page-main {
+  flex: 1;
+}
+
+.page-hero {
+  max-width: 820px;
+  margin-bottom: 64px;
+}
+
+.page-hero h1 {
+  margin: 14px 0 22px;
+  font-size: clamp(2.35rem, 6vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.page-lead {
+  max-width: 760px;
+  color: var(--text-muted);
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.content-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 64px;
+  align-items: start;
+}
+
+.article-content {
+  min-width: 0;
+}
+
+.article-content section {
+  padding: 36px 0;
+  border-top: 1px solid var(--border);
+}
+
+.article-content h2 {
+  margin-bottom: 16px;
+  font-size: clamp(1.55rem, 3vw, 2.15rem);
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+}
+
+.article-content h3 {
+  margin: 26px 0 10px;
+  font-size: 1.1rem;
+}
+
+.article-content p,
+.article-content li {
+  color: var(--text-muted);
+}
+
+.article-content p + p {
+  margin-top: 14px;
+}
+
+.article-content ul,
+.article-content ol {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0 22px;
+}
+
+.article-content strong {
+  color: var(--text);
+}
+
+.article-content a:not(.btn) {
+  color: var(--accent-bright);
+  text-decoration: underline;
+  text-decoration-color: rgba(168, 186, 255, 0.35);
+  text-underline-offset: 3px;
+}
+
+.article-content pre {
+  margin-top: 18px;
+  padding: 20px;
+  overflow-x: auto;
+  color: #dce3f7;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.article-content pre code {
+  white-space: pre;
+}
+
+.example-table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.example-table th,
+.example-table td {
+  padding: 13px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.example-table th {
+  color: var(--text);
+  background: var(--bg-elev-2);
+}
+
+.example-table td {
+  color: var(--text-muted);
+}
+
+.page-aside {
+  position: sticky;
+  top: 96px;
+  padding: 20px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.page-aside h2 {
+  margin-bottom: 12px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+.page-aside nav {
+  display: grid;
+  gap: 10px;
+}
+
+.page-aside a {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.page-aside a:hover {
+  color: var(--accent-bright);
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.related-card {
+  display: block;
+  padding: 20px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition:
+    transform 0.18s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.related-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(108, 140, 255, 0.5);
+  background: var(--bg-elev-2);
+  box-shadow: var(--shadow-accent);
+}
+
+.related-card:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 4px;
+}
+
+.related-card strong,
+.related-card span {
+  display: block;
+}
+
+.related-card span {
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 800px) {
+  .page-main {
+    padding-top: 56px;
+  }
+
+  .content-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .page-aside {
+    position: static;
+    order: -1;
+  }
+
+  .related-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .example-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
 /* ─────────────────────────── Primitives ─────────────────────────── */
 
 .container {
@@ -1034,11 +1267,11 @@ pre code {
   }
 
   .site-nav a {
-    padding: 6px 10px;
-    font-size: 13px;
+    padding: 6px;
+    font-size: 12px;
   }
 
-  .nav-cta span {
+  .nav-cta {
     display: none;
   }
 
@@ -1068,6 +1301,10 @@ pre code {
 }
 
 @media (max-width: 420px) {
+  .logo-text {
+    display: none;
+  }
+
   .hero-preview {
     margin-top: 56px;
   }

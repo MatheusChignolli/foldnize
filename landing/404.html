@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found | Foldnize</title>
+    <meta
+      name="description"
+      content="The requested Foldnize page could not be found. Return home or browse the documentation and photo organization guides."
+    />
+    <meta name="robots" content="noindex, follow" />
+    <meta name="theme-color" content="#0a0c12" />
+    <link
+      rel="icon"
+      href="/assets/favicon-32.png"
+      type="image/png"
+      sizes="32x32"
+      onerror="this.onerror=null;this.href='assets/favicon-32.png'"
+    />
+    <link
+      rel="stylesheet"
+      href="/styles.css"
+      onerror="this.onerror=null;this.href='styles.css'"
+    />
+  </head>
+  <body class="error-page">
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="/" class="logo" aria-label="Foldnize home">
+          <img
+            src="/assets/logo.png"
+            alt=""
+            width="36"
+            height="36"
+            onerror="this.onerror=null;this.src='assets/logo.png'"
+          />
+          <span class="logo-text">Foldnize</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/docs/">Docs</a>
+          <a href="/cli/">CLI</a>
+          <a href="/examples/">Examples</a>
+          <a href="/download/">Download</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <div class="container">
+        <header class="page-hero">
+          <p class="section-eyebrow">404 · Page not found</p>
+          <h1>This file is not where we expected it.</h1>
+          <p class="page-lead">
+            The address may be outdated or mistyped. Return to Foldnize or
+            continue with the documentation and photo organization guides.
+          </p>
+          <div class="page-actions">
+            <a class="btn btn-primary" href="/">Go to homepage</a>
+            <a class="btn btn-ghost" href="/docs/">Read the docs</a>
+          </div>
+        </header>
+
+        <section aria-labelledby="useful-links-title">
+          <h2 id="useful-links-title">Useful pages</h2>
+          <div class="related-grid">
+            <a class="related-card" href="/guides/rename-photos-by-exif-date/">
+              <strong>Rename photos by EXIF date</strong>
+              <span>Turn embedded capture times into useful filenames.</span>
+            </a>
+            <a class="related-card" href="/guides/organize-photos-into-year-month-folders/">
+              <strong>Sort photos into Year/Month folders</strong>
+              <span>Create a chronological YYYY/MM media archive.</span>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-bottom">
+        <span>© 2026 Foldnize</span>
+        <span>Local-first · Open source</span>
+      </div>
+    </footer>
+    <script>
+      if (window.location.protocol === "file:") {
+        document.querySelectorAll('a[href^="/"]').forEach((link) => {
+          const route = link.getAttribute("href");
+          link.href = route === "/" ? "index.html" : `.${route}index.html`;
+        });
+      }
+    </script>
+  </body>
+</html>

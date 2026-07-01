@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Foldnize CLI | Rename Photos by EXIF Date</title>
+    <meta name="description" content="Use the Foldnize CLI to rename photos by EXIF date, organize videos by metadata date, and sort media into Year/Month folders." />
+    <meta name="robots" content="index, follow, max-image-preview:large" /><link rel="canonical" href="https://foldnize.com/cli/" />
+    <link rel="icon" href="../assets/favicon-32.png" type="image/png" sizes="32x32" /><link rel="stylesheet" href="../styles.css" />
+    <meta property="og:title" content="Foldnize CLI" /><meta property="og:description" content="Rename and organize media by EXIF, QuickTime, and metadata dates from the command line." /><meta property="og:url" content="https://foldnize.com/cli/" /><meta property="og:type" content="article" /><meta property="og:image" content="https://foldnize.com/assets/og-image.svg" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Foldnize CLI","description":"Command-line usage for organizing media by original metadata date.","url":"https://foldnize.com/cli/","author":{"@type":"Person","name":"Matheus Chignolli"}}</script>
+  </head>
+  <body>
+    <header class="site-header"><div class="container header-inner"><a href="../" class="logo"><img src="../assets/logo.png" alt="" width="36" height="36" /><span class="logo-text">Foldnize</span></a><nav class="site-nav" aria-label="Primary"><a href="../docs/">Docs</a><a href="../download/">Download</a><a href="../examples/">Examples</a><a href="../guides/rename-photos-by-exif-date/">Guides</a></nav></div></header>
+    <main class="page-main"><div class="container"><header class="page-hero"><p class="section-eyebrow">Node.js CLI</p><h1>Rename and organize media from the command line</h1><p class="page-lead">The Foldnize CLI reads original dates from EXIF, QuickTime, and other metadata. Preview every operation with <code>--dry-run</code>, then run the same command to apply it.</p><div class="page-actions"><a class="btn btn-primary" href="https://www.npmjs.com/package/foldnize">View on npm</a><a class="btn btn-ghost" href="../examples/">See output examples</a></div></header>
+      <div class="content-layout"><article class="article-content">
+        <section id="quick-start"><h2>Quick start</h2><p>Node.js 22 or newer is required. Run the CLI without a global installation:</p><pre><code>npx foldnize --root=./photos --mode=replace --dry-run</code></pre><p>Review the output, remove <code>--dry-run</code>, and run it again when you are ready.</p></section>
+        <section id="recipes"><h2>Common commands</h2><h3>Prefix the original filename with its EXIF date</h3><pre><code>npx foldnize --root=./photos --mode=prefix --dry-run</code></pre><h3>Replace filenames and create Year/Month folders</h3><pre><code>npx foldnize --root=./photos --mode=replace --year-month --dry-run</code></pre><h3>Add a descriptive custom name</h3><pre><code>npx foldnize --root=./photos --mode=custom \
+  --custom-name=vacation --year-month --dry-run</code></pre></section>
+        <section id="options"><h2>CLI options</h2><table class="example-table"><thead><tr><th>Option</th><th>Purpose</th></tr></thead><tbody><tr><td><code>--root=PATH</code></td><td>Folder to scan; defaults to the current folder.</td></tr><tr><td><code>--mode=MODE</code></td><td>Use prefix, replace, or custom naming.</td></tr><tr><td><code>--custom-name=NAME</code></td><td>Name used by custom mode.</td></tr><tr><td><code>--year-month</code></td><td>Move files into <code>YYYY/MM/</code>.</td></tr><tr><td><code>--no-subfolders</code></td><td>Scan only the top level.</td></tr><tr><td><code>--dry-run</code></td><td>Preview without writing files.</td></tr></tbody></table></section>
+        <section id="library"><h2>Use Foldnize as a TypeScript library</h2><pre><code>npm install foldnize</code></pre><pre><code>import { organizeFolder, Mode } from "foldnize";
+
+organizeFolder({
+  root: "/Users/you/Pictures",
+  mode: Mode.REPLACE,
+  organizeIntoYearMonth: true,
+  scanSubfolders: true,
+  dryRun: true,
+});</code></pre></section>
+        <section><h2>Related guides</h2><div class="related-grid"><a class="related-card" href="../guides/rename-photos-by-exif-date/"><strong>Rename photos by EXIF date</strong><span>Understand metadata and naming modes.</span></a><a class="related-card" href="../guides/organize-videos-by-metadata-date/"><strong>Organize videos</strong><span>Work with MOV and MP4 creation dates.</span></a></div></section>
+      </article><aside class="page-aside"><h2>CLI reference</h2><nav><a href="#quick-start">Quick start</a><a href="#recipes">Commands</a><a href="#options">Options</a><a href="#library">TypeScript library</a></nav></aside></div>
+    </div></main><footer class="site-footer"><div class="container footer-bottom"><span>© 2026 Foldnize</span><span><a href="../">Home</a> · <a href="https://github.com/MatheusChignolli/foldnize">GitHub</a></span></div></footer>
+  </body>
+</html>

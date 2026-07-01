@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Photo and Video Rename Examples | Foldnize</title>
+    <meta name="description" content="See Foldnize examples for EXIF date prefixes, timestamp filenames, custom names, collision handling, and Year/Month media folders." />
+    <meta name="robots" content="index, follow, max-image-preview:large" /><link rel="canonical" href="https://foldnize.com/examples/" />
+    <link rel="icon" href="../assets/favicon-32.png" type="image/png" sizes="32x32" /><link rel="stylesheet" href="../styles.css" />
+    <meta property="og:title" content="Photo and Video Rename Examples" /><meta property="og:description" content="Compare EXIF rename modes and Year/Month folder output." /><meta property="og:url" content="https://foldnize.com/examples/" /><meta property="og:type" content="article" /><meta property="og:image" content="https://foldnize.com/assets/og-image.svg" />
+  </head>
+  <body>
+    <header class="site-header"><div class="container header-inner"><a href="../" class="logo"><img src="../assets/logo.png" alt="" width="36" height="36" /><span class="logo-text">Foldnize</span></a><nav class="site-nav" aria-label="Primary"><a href="../docs/">Docs</a><a href="../download/">Download</a><a href="../cli/">CLI</a><a href="../guides/rename-photos-by-exif-date/">Guides</a></nav></div></header>
+    <main class="page-main"><div class="container"><header class="page-hero"><p class="section-eyebrow">Before and after</p><h1>Photo, video, and folder examples</h1><p class="page-lead">Foldnize uses embedded dates instead of unreliable filesystem dates. These examples show exactly how each mode transforms common camera and phone filenames.</p><div class="page-actions"><a class="btn btn-primary" href="../download/">Download Foldnize</a><a class="btn btn-ghost" href="../cli/">Copy CLI commands</a></div></header>
+      <div class="content-layout"><article class="article-content">
+        <section id="prefix"><h2>Keep the original name with Prefix mode</h2><p>Prefix mode is useful when the original camera filename still matters.</p><table class="example-table"><thead><tr><th>Before</th><th>After</th></tr></thead><tbody><tr><td><code>IMG_1234.jpg</code></td><td><code>20230715-IMG_1234.jpg</code></td></tr><tr><td><code>DSC_9012.jpg</code></td><td><code>20230716-DSC_9012.jpg</code></td></tr><tr><td><code>VID_4567.mp4</code></td><td><code>20230715-VID_4567.mp4</code></td></tr></tbody></table></section>
+        <section id="replace"><h2>Create sortable timestamp filenames</h2><p>Replace mode produces filenames that sort chronologically in almost every file manager.</p><table class="example-table"><thead><tr><th>Before</th><th>After</th></tr></thead><tbody><tr><td><code>IMG_1234.jpg</code></td><td><code>20230715-142310.jpg</code></td></tr><tr><td><code>IMG_1235.jpg</code></td><td><code>20230715-142412.jpg</code></td></tr><tr><td><code>clip.mov</code></td><td><code>20230715-153022.mov</code></td></tr></tbody></table></section>
+        <section id="custom"><h2>Add context with Custom mode</h2><p>Custom mode combines a safe label with the original timestamp.</p><table class="example-table"><thead><tr><th>Custom name</th><th>Result</th></tr></thead><tbody><tr><td><code>vacation</code></td><td><code>vacation-20230716-104230.png</code></td></tr><tr><td><code>family-trip</code></td><td><code>family-trip-20230716-104230.jpg</code></td></tr></tbody></table></section>
+        <section id="folders"><h2>Sort into Year/Month folders</h2><pre><code>Photos/
+├── 2022/
+│   └── 12/20221224-183012.jpg
+└── 2023/
+    ├── 07/20230715-142310.jpg
+    └── 08/20230802-091544.mp4</code></pre><p>The folder date and filename date come from the same embedded metadata.</p></section>
+        <section id="collisions"><h2>Handle matching timestamps safely</h2><p>If two files would receive the same name, Foldnize keeps both by adding a numeric suffix: <code>20230715-142310.jpg</code>, then <code>20230715-142310-1.jpg</code>.</p></section>
+        <section><h2>Choose a workflow</h2><div class="related-grid"><a class="related-card" href="../guides/organize-photos-into-year-month-folders/"><strong>Year/Month folders</strong><span>Follow the complete folder guide.</span></a><a class="related-card" href="../docs/"><strong>Documentation</strong><span>Review modes, metadata, and safety.</span></a></div></section>
+      </article><aside class="page-aside"><h2>Examples</h2><nav><a href="#prefix">Prefix mode</a><a href="#replace">Replace mode</a><a href="#custom">Custom mode</a><a href="#folders">Year/Month folders</a><a href="#collisions">Collisions</a></nav></aside></div>
+    </div></main><footer class="site-footer"><div class="container footer-bottom"><span>© 2026 Foldnize</span><span><a href="../">Home</a> · <a href="https://github.com/MatheusChignolli/foldnize">GitHub</a></span></div></footer>
+  </body>
+</html>

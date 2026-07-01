@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Organize Photos into Year/Month Folders | Foldnize</title>
+    <meta name="description" content="Automatically sort photos into YYYY/MM folders using their original EXIF dates. Preview the folder structure safely with Foldnize dry run." />
+    <meta name="robots" content="index, follow, max-image-preview:large" /><link rel="canonical" href="https://foldnize.com/guides/organize-photos-into-year-month-folders/" />
+    <link rel="icon" href="../../assets/favicon-32.png" type="image/png" sizes="32x32" /><link rel="stylesheet" href="../../styles.css" />
+    <meta property="og:title" content="Organize Photos into Year/Month Folders" /><meta property="og:description" content="Create a chronological YYYY/MM photo archive from embedded dates." /><meta property="og:url" content="https://foldnize.com/guides/organize-photos-into-year-month-folders/" /><meta property="og:type" content="article" /><meta property="og:image" content="https://foldnize.com/assets/og-image.svg" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"How to organize photos into Year/Month folders","description":"Sort media into YYYY/MM folders using original metadata dates.","step":[{"@type":"HowToStep","name":"Select the source folder"},{"@type":"HowToStep","name":"Enable Year/Month sorting"},{"@type":"HowToStep","name":"Preview the folder moves"},{"@type":"HowToStep","name":"Apply the organization"}]}</script>
+  </head>
+  <body>
+    <header class="site-header"><div class="container header-inner"><a href="../../" class="logo"><img src="../../assets/logo.png" alt="" width="36" height="36" /><span class="logo-text">Foldnize</span></a><nav class="site-nav" aria-label="Primary"><a href="../../docs/">Docs</a><a href="../../download/">Download</a><a href="../../cli/">CLI</a><a href="../../examples/">Examples</a></nav></div></header>
+    <main class="page-main"><div class="container"><header class="page-hero"><p class="section-eyebrow">Folder organization guide</p><h1>Organize photos into Year/Month folders</h1><p class="page-lead">Turn one crowded media folder into a predictable <code>YYYY/MM/</code> archive. Foldnize uses each file’s original metadata date to choose its destination.</p><div class="page-actions"><a class="btn btn-primary" href="../../download/">Download Foldnize</a><a class="btn btn-ghost" href="../../examples/">See folder examples</a></div></header>
+      <div class="content-layout"><article class="article-content">
+        <section id="result"><h2>The resulting folder structure</h2><pre><code>Media/
+├── 2021/
+│   └── 06/
+├── 2022/
+│   ├── 01/
+│   └── 12/
+└── 2023/
+    ├── 07/
+    └── 08/</code></pre><p>Foldnize reuses existing year and month folders. Missing folders are created only when required.</p></section>
+        <section id="steps"><h2>Build the archive safely</h2><ol><li>Select the highest-level folder you want Foldnize to scan.</li><li>Choose whether to rename files, or leave the renaming mode unchanged for your workflow.</li><li>Enable <strong>Sort into Year/Month folders</strong>.</li><li>Leave recursive scanning enabled if media is spread across nested folders.</li><li>Run a Dry run and inspect both the destination folder and filename.</li><li>Apply the operation after confirming the preview.</li></ol></section>
+        <section id="cli"><h2>Year/Month sorting from the CLI</h2><pre><code>npx foldnize --root=./media --mode=prefix --year-month --dry-run</code></pre><p>This keeps each original filename, adds the date prefix, and previews a move into the matching year and month. Remove <code>--dry-run</code> to apply.</p></section>
+        <section id="mixed"><h2>Organize mixed photos and videos together</h2><p>The same archive can contain JPG, PNG, MOV, MP4, and MP3 files. Images use EXIF-style original dates; supported videos can use QuickTime metadata or FFprobe output. A single trip’s photos and videos therefore land in the same chronological month.</p></section>
+        <section id="behavior"><h2>What happens to existing folders?</h2><ul><li>Files already in the correct folder can remain there.</li><li>Already formatted filenames are not repeatedly renamed.</li><li>Empty folders left after moves are preserved.</li><li>Filename collisions receive numbered suffixes.</li><li>Files without readable dates are skipped.</li></ul></section>
+        <section><h2>Related guides</h2><div class="related-grid"><a class="related-card" href="../rename-photos-by-exif-date/"><strong>Rename photos by EXIF date</strong><span>Choose the best naming format.</span></a><a class="related-card" href="../organize-videos-by-metadata-date/"><strong>Organize videos by date</strong><span>Understand MOV and MP4 metadata.</span></a></div></section>
+      </article><aside class="page-aside"><h2>In this guide</h2><nav><a href="#result">Folder structure</a><a href="#steps">Safe workflow</a><a href="#cli">CLI command</a><a href="#mixed">Mixed media</a><a href="#behavior">Existing folders</a></nav></aside></div>
+    </div></main><footer class="site-footer"><div class="container footer-bottom"><span>© 2026 Foldnize</span><span><a href="../../">Home</a> · <a href="../../docs/">Docs</a></span></div></footer>
+  </body>
+</html>

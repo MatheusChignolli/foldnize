@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Organize iPhone Photos by Original Date | Foldnize</title>
+    <meta name="description" content="Organize exported iPhone photos and videos by original EXIF and QuickTime dates. Rename files and sort them into Year/Month folders locally." />
+    <meta name="robots" content="index, follow, max-image-preview:large" /><link rel="canonical" href="https://foldnize.com/guides/organize-iphone-photos-by-original-date/" />
+    <link rel="icon" href="../../assets/favicon-32.png" type="image/png" sizes="32x32" /><link rel="stylesheet" href="../../styles.css" />
+    <meta property="og:title" content="Organize iPhone Photos by Original Date" /><meta property="og:description" content="Sort exported iPhone photos and videos locally from embedded dates." /><meta property="og:url" content="https://foldnize.com/guides/organize-iphone-photos-by-original-date/" /><meta property="og:type" content="article" /><meta property="og:image" content="https://foldnize.com/assets/og-image.svg" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"How to organize iPhone photos by original date","description":"Organize exported iPhone media from embedded EXIF and QuickTime dates.","step":[{"@type":"HowToStep","name":"Export iPhone media to a folder"},{"@type":"HowToStep","name":"Scan the exported folder"},{"@type":"HowToStep","name":"Preview names and folders"},{"@type":"HowToStep","name":"Apply the organization"}]}</script>
+  </head>
+  <body>
+    <header class="site-header"><div class="container header-inner"><a href="../../" class="logo"><img src="../../assets/logo.png" alt="" width="36" height="36" /><span class="logo-text">Foldnize</span></a><nav class="site-nav" aria-label="Primary"><a href="../../docs/">Docs</a><a href="../../download/">Download</a><a href="../../cli/">CLI</a><a href="../../examples/">Examples</a></nav></div></header>
+    <main class="page-main"><div class="container"><header class="page-hero"><p class="section-eyebrow">iPhone media guide</p><h1>Organize iPhone photos by original date</h1><p class="page-lead">After exporting an iPhone library, file dates can reflect the copy or download time. Foldnize reads embedded photo and video metadata so the archive follows when each moment was captured.</p><div class="page-actions"><a class="btn btn-primary" href="../../download/">Download Foldnize</a><a class="btn btn-ghost" href="../organize-photos-into-year-month-folders/">Year/Month guide</a></div></header>
+      <div class="content-layout"><article class="article-content">
+        <section id="export"><h2>Start with an exported folder</h2><p>Export or copy the iPhone media you want to organize into a normal folder on your Mac, Windows PC, or Linux computer. Keep an untouched backup before reorganizing a large library.</p><p>Foldnize currently scans JPG, JPEG, PNG, MOV, MP4, and MP3. If an export uses another format, convert or export a supported copy first.</p></section>
+        <section id="dates"><h2>Why iPhone photos and videos need different metadata</h2><p>Photos commonly contain EXIF fields such as <code>DateTimeOriginal</code>. iPhone MOV and MP4 videos commonly store creation information in QuickTime metadata. Foldnize can read both, letting a mixed export share one chronological structure.</p></section>
+        <section id="steps"><h2>Organize the export</h2><ol><li>Open Foldnize and choose the exported folder.</li><li>Use Prefix mode to retain familiar <code>IMG_</code> names, or Replace mode for pure timestamps.</li><li>Enable Year/Month sorting for a chronological archive.</li><li>Keep Dry run enabled and review a representative mix of photos and videos.</li><li>Apply only after the metadata dates and destinations look correct.</li></ol></section>
+        <section id="example"><h2>Example mixed iPhone archive</h2><pre><code>iPhone Archive/
+└── 2024/
+    └── 05/
+        ├── 20240518-IMG_4821.jpg
+        ├── 20240518-IMG_4822.mov
+        └── 20240519-IMG_4823.jpg</code></pre></section>
+        <section id="limits"><h2>Check these cases during preview</h2><ul><li>Edited exports may carry a different metadata date than the original asset.</li><li>Downloaded images and screenshots may not contain an original capture date.</li><li>Shared or re-encoded videos can lose QuickTime creation metadata.</li><li>Live Photo exports can contain separate image and video files; inspect whether both dates align.</li></ul></section>
+        <section><h2>Keep learning</h2><div class="related-grid"><a class="related-card" href="../rename-photos-by-exif-date/"><strong>EXIF photo renaming</strong><span>Learn how capture dates become filenames.</span></a><a class="related-card" href="../organize-videos-by-metadata-date/"><strong>Video metadata dates</strong><span>Understand MOV and MP4 handling.</span></a></div></section>
+      </article><aside class="page-aside"><h2>In this guide</h2><nav><a href="#export">Export folder</a><a href="#dates">Photo and video dates</a><a href="#steps">Workflow</a><a href="#example">Example archive</a><a href="#limits">Cases to check</a></nav></aside></div>
+    </div></main><footer class="site-footer"><div class="container footer-bottom"><span>© 2026 Foldnize</span><span><a href="../../">Home</a> · <a href="../../docs/">Docs</a></span></div></footer>
+  </body>
+</html>
