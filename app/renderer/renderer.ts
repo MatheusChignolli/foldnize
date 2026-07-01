@@ -21,6 +21,39 @@ websiteLinkBtn.addEventListener("click", () => {
   void window.foldnize.openExternal("https://foldnize.com");
 });
 
+const versionPill = document.getElementById(
+  "version-pill",
+) as HTMLButtonElement;
+const versionLabel = document.getElementById("version-label") as HTMLElement;
+let updateReleaseUrl: string | null = null;
+
+versionPill.addEventListener("click", () => {
+  if (updateReleaseUrl) {
+    void window.foldnize.openExternal(updateReleaseUrl);
+  }
+});
+
+async function refreshVersionPill(): Promise<void> {
+  const update = await window.foldnize.checkForUpdate();
+  versionLabel.textContent = `v${update.currentVersion}`;
+
+  if (!update.updateAvailable || !update.latestVersion || !update.releaseUrl) {
+    return;
+  }
+
+  updateReleaseUrl = update.releaseUrl;
+  versionLabel.textContent = `v${update.currentVersion} · Update v${update.latestVersion}`;
+  versionPill.disabled = false;
+  versionPill.classList.add("has-update");
+  versionPill.setAttribute(
+    "aria-label",
+    `Foldnize ${update.latestVersion} is available. Open the download page.`,
+  );
+  versionPill.title = "Download the latest Foldnize release";
+}
+
+void refreshVersionPill();
+
 interface RendererState {
   folderPath: string | null;
 }

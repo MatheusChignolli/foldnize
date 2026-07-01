@@ -4,12 +4,16 @@ import type {
   FolderSelection,
   FoldnizeBridge,
   OrganizeResponse,
+  UpdateInfo,
 } from "./bridge-types";
 import { sanitizeCustomName } from "foldnize";
 import type { LogEntry, OrganizeOptions } from "foldnize";
 
 const bridge: FoldnizeBridge = {
   platform: process.platform,
+
+  checkForUpdate: (): Promise<UpdateInfo> =>
+    ipcRenderer.invoke("app:checkForUpdate"),
 
   selectFolder: (): Promise<FolderSelection | null> =>
     ipcRenderer.invoke("dialog:selectFolder"),

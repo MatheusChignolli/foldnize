@@ -13,6 +13,7 @@ import { organizeFolder } from "foldnize";
 import type {
   FolderSelection,
   OrganizeResponse,
+  UpdateInfo,
 } from "./bridge-types";
 import type {
   LogEntry,
@@ -25,6 +26,83 @@ import type {
 app.setName("Foldnize");
 
 let mainWindow: BrowserWindow | null = null;
+
+const RELEASES_URL =
+  "https://api.github.com/repos/MatheusChignolli/foldnize/releases?per_page=20";
+const RELEASE_TAG_PREFIX = "foldnize-app-v";
+
+interface GitHubRelease {
+  tag_name?: unknown;
+  html_url?: unknown;
+  draft?: unknown;
+  prerelease?: unknown;
+}
+
+function compareVersions(left: string, right: string): number {
+  const leftParts = left.split(".").map(Number);
+  const rightParts = right.split(".").map(Number);
+  const length = Math.max(leftParts.length, rightParts.length);
+
+  for (let index = 0; index < length; index += 1) {
+    const difference = (leftParts[index] ?? 0) - (rightParts[index] ?? 0);
+    if (difference !== 0) return difference;
+  }
+
+  return 0;
+}
+
+async function checkForUpdate(): Promise<UpdateInfo> {
+  const currentVersion = app.getVersion();
+  const fallback: UpdateInfo = {
+    currentVersion,
+    latestVersion: null,
+    updateAvailable: false,
+    releaseUrl: null,
+  };
+
+  try {
+    const response = await fetch(RELEASES_URL, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        "User-Agent": `Foldnize/${currentVersion}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+      signal: AbortSignal.timeout(8_000),
+    });
+
+    if (!response.ok) return fallback;
+
+    const releases = (await response.json()) as GitHubRelease[];
+    const release = releases.find(
+      (candidate) =>
+        candidate.draft !== true &&
+        candidate.prerelease !== true &&
+        typeof candidate.tag_name === "string" &&
+        candidate.tag_name.startsWith(RELEASE_TAG_PREFIX) &&
+        typeof candidate.html_url === "string",
+    );
+
+    if (
+      !release ||
+      typeof release.tag_name !== "string" ||
+      typeof release.html_url !== "string"
+    ) {
+      return fallback;
+    }
+
+    const latestVersion = release.tag_name.slice(RELEASE_TAG_PREFIX.length);
+    if (!/^\d+(?:\.\d+){1,2}$/.test(latestVersion)) return fallback;
+
+    return {
+      currentVersion,
+      latestVersion,
+      updateAvailable: compareVersions(latestVersion, currentVersion) > 0,
+      releaseUrl: release.html_url,
+    };
+  } catch {
+    return fallback;
+  }
+}
 
 function setDockIcon(): void {
   // Packaged macOS apps get their icon from the bundle. Overriding it at
@@ -97,6 +175,8 @@ ipcMain.handle(
     await shell.openExternal(url);
   },
 );
+
+ipcMain.handle("app:checkForUpdate", checkForUpdate);
 
 ipcMain.handle(
   "dialog:selectFolder",
