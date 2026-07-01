@@ -21,6 +21,14 @@ defaults:
 jobs:
   verify-version:
     name: Verify version
+    # App only — library releases use foldnize-v* and are handled by
+    # publish-npm.yml. A skipped root job also skips its dependent jobs.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'release' &&
+        startsWith(github.event.release.tag_name, 'foldnize-app-v')
+      )
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
