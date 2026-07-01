@@ -29,7 +29,7 @@ npm run dist:linux  # Linux only
 
 Artifacts land in `app/release/`.
 
-macOS builds are **signed and notarized** when GitHub secrets are configured — see **[MACOS_SIGNING.md](./MACOS_SIGNING.md)**. Without those secrets, builds stay unsigned and Gatekeeper will block them.
+macOS builds are **signed and notarized** using the GitHub secrets documented in **[MACOS_SIGNING.md](./MACOS_SIGNING.md)**. The release workflow fails rather than publishing an unsigned macOS build when those secrets are missing or invalid.
 
 ---
 
