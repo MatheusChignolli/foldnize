@@ -14,7 +14,9 @@ asar: true
 
 mac:
   category: public.app-category.productivity
-  icon: assets/icon.icns
+  # Preserve the Icon Composer asset for the native layered/glass Dock icon.
+  # electron-builder also derives an icns fallback for older macOS versions.
+  icon: assets/Foldnize.icon
   target:
     - dmg
     - zip
@@ -26,15 +28,15 @@ mac:
 dmg:
   title: Foldnize
   background: dmg-background.png
-  iconSize: 128
+  iconSize: 112
   window:
     width: 540
     height: 380
   contents:
-    - x: 135
-      y: 245
-    - x: 405
-      y: 245
+    - x: 145
+      y: 225
+    - x: 395
+      y: 225
       type: link
       path: /Applications
 

@@ -64,7 +64,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-latest
+          # Icon Composer assets require Xcode 26's actool.
+          - os: macos-26
             platform: macos
             electron_flags: --mac --config.mac.forceCodeSigning=true --config.mac.notarize=true
           - os: windows-latest
@@ -81,9 +82,15 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: app/package-lock.json
+          cache-dependency-path: |
+            app/package-lock.json
+            library/package-lock.json
 
-      - name: Install dependencies
+      - name: Build Foldnize library
+        working-directory: library
+        run: npm ci && npm run build
+
+      - name: Install app dependencies
         run: npm ci
 
       - name: Typecheck

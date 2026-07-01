@@ -1,16 +1,43 @@
 import path from "node:path";
+import fs from "node:fs";
 import { execFileSync } from "node:child_process";
 import type { DateParts } from "./naming";
 
 type DateReader = (filePath: string) => DateParts | null;
 
-function hasCommand(command: string): boolean {
-  try {
-    execFileSync("which", [command], { stdio: "ignore" });
-    return true;
-  } catch {
-    return false;
+const MACOS_COMMAND_DIRS = [
+  "/opt/homebrew/bin",
+  "/usr/local/bin",
+  "/opt/local/bin",
+  "/usr/bin",
+];
+
+/** @internal Resolve tools even when a Finder-launched app has a minimal PATH. */
+export function resolveCommand(command: string): string | null {
+  const pathDirs = (process.env.PATH ?? "")
+    .split(path.delimiter)
+    .filter(Boolean);
+  const directories = [
+    ...pathDirs,
+    ...(process.platform === "darwin" ? MACOS_COMMAND_DIRS : []),
+  ];
+  const names = process.platform === "win32"
+    ? [`${command}.exe`, command]
+    : [command];
+
+  for (const directory of new Set(directories)) {
+    for (const name of names) {
+      const candidate = path.join(directory, name);
+      try {
+        fs.accessSync(candidate, fs.constants.X_OK);
+        return candidate;
+      } catch {
+        // Try the next candidate.
+      }
+    }
   }
+
+  return null;
 }
 
 export function formatDateToParts(
@@ -53,10 +80,13 @@ export function formatDateToParts(
   return null;
 }
 
-function getDateFromExiftool(filePath: string): DateParts | null {
+function getDateFromExiftool(
+  executable: string,
+  filePath: string,
+): DateParts | null {
   try {
     const output = execFileSync(
-      "exiftool",
+      executable,
       [
         "-s3",
         "-DateTimeOriginal",
@@ -79,7 +109,10 @@ function getDateFromExiftool(filePath: string): DateParts | null {
   }
 }
 
-function getDateFromFfprobe(filePath: string): DateParts | null {
+function getDateFromFfprobe(
+  executable: string,
+  filePath: string,
+): DateParts | null {
   const tagNames = [
     "creation_time",
     "com.apple.quicktime.creationdate",
@@ -89,7 +122,7 @@ function getDateFromFfprobe(filePath: string): DateParts | null {
   for (const tag of tagNames) {
     try {
       const output = execFileSync(
-        "ffprobe",
+        executable,
         [
           "-v",
           "error",
@@ -113,14 +146,16 @@ function getDateFromFfprobe(filePath: string): DateParts | null {
 }
 
 function realReader(filePath: string): DateParts | null {
-  if (hasCommand("exiftool")) {
-    const fromExiftool = getDateFromExiftool(filePath);
+  const exiftool = resolveCommand("exiftool");
+  if (exiftool) {
+    const fromExiftool = getDateFromExiftool(exiftool, filePath);
     if (fromExiftool) return fromExiftool;
   }
 
   const ext = path.extname(filePath).toLowerCase();
-  if ((ext === ".mp4" || ext === ".mov") && hasCommand("ffprobe")) {
-    const fromFfprobe = getDateFromFfprobe(filePath);
+  const ffprobe = resolveCommand("ffprobe");
+  if ((ext === ".mp4" || ext === ".mov") && ffprobe) {
+    const fromFfprobe = getDateFromFfprobe(ffprobe, filePath);
     if (fromFfprobe) return fromFfprobe;
   }
 

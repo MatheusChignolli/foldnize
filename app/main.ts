@@ -27,7 +27,9 @@ app.setName("Foldnize");
 let mainWindow: BrowserWindow | null = null;
 
 function setDockIcon(): void {
-  if (process.platform !== "darwin" || !app.dock) return;
+  // Packaged macOS apps get their icon from the bundle. Overriding it at
+  // runtime replaces the modern Icon Composer asset with a flat legacy image.
+  if (process.platform !== "darwin" || app.isPackaged || !app.dock) return;
 
   const assetsDir = path.join(__dirname, "assets");
   const icnsPath = path.join(assetsDir, "icon.icns");

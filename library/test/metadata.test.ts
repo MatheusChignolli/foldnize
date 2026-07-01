@@ -1,7 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 
-import { formatDateToParts } from "../src/metadata";
+import { formatDateToParts, resolveCommand } from "../src/metadata";
 import type { DateParts } from "../src/naming";
 
 const parts = (
@@ -82,5 +85,21 @@ test("formatDateToParts — rejects invalid input", () => {
 
   for (const { name, input } of cases) {
     assert.equal(formatDateToParts(input), null, name);
+  }
+});
+
+test("resolveCommand finds an executable on PATH", () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "foldnize-path-"));
+  const executable = path.join(directory, "metadata-reader");
+  const previousPath = process.env.PATH;
+
+  try {
+    fs.writeFileSync(executable, "#!/bin/sh\n");
+    fs.chmodSync(executable, 0o755);
+    process.env.PATH = directory;
+    assert.equal(resolveCommand("metadata-reader"), executable);
+  } finally {
+    process.env.PATH = previousPath;
+    fs.rmSync(directory, { recursive: true, force: true });
   }
 });

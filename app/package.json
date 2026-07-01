@@ -51,6 +51,6 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "foldnize": "^1.0.0"
+    "foldnize": "^1.0.1"
   }
 }
