@@ -26,7 +26,8 @@ Source code is TypeScript. Each project builds independently via `tsc` into its 
 ## How the three pieces talk
 
 - `library/` knows nothing about Electron or the landing page — pure logic, runnable from Node or any CLI.
-- `app/` depends on the published [`foldnize`](https://www.npmjs.com/package/foldnize) npm package (`^1.0.0`).
+- `app/` uses the matching local `library/` package and bundles ExifTool in
+  Windows releases, so end users do not need to install metadata tools.
 - `landing/` is decoupled — it links to the library/app for downloads.
 
 When developing the library in this repo, temporarily use `file:../library` or `npm link` in `app/` — see [`app/README.md`](./app/README.md).

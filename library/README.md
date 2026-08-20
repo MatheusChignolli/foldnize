@@ -29,6 +29,18 @@ Supported formats: `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
 
 Files without parseable date metadata are silently skipped — never crash.
 
+Desktop applications may provide a bundled executable without changing the
+user's `PATH`:
+
+```ts
+import { configureMetadataTools } from "foldnize";
+
+configureMetadataTools({
+  exiftool: "/absolute/path/to/exiftool",
+  ffprobe: "/absolute/path/to/ffprobe", // optional
+});
+```
+
 ## Library usage
 
 ```ts

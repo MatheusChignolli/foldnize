@@ -1,6 +1,6 @@
 {
   "name": "foldnize",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Organize photos and videos by their embedded EXIF/QuickTime original date — three renaming modes, optional Year/Month folder sorting, dry-run preview.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -22,8 +22,8 @@
     "build:watch": "tsc -p tsconfig.build.json --watch",
     "typecheck": "tsc -p tsconfig.json",
     "test": "tsx --test \"test/*.test.ts\"",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build && chmod +x dist/bin/foldnize.js"
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "prepublishOnly": "npm run clean && npm run build && node -e \"if(process.platform!=='win32')require('node:fs').chmodSync('dist/bin/foldnize.js',0o755)\""
   },
   "keywords": [
     "files",

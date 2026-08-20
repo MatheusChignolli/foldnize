@@ -4,7 +4,11 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { formatDateToParts, resolveCommand } from "../src/metadata";
+import {
+  configureMetadataTools,
+  formatDateToParts,
+  resolveCommand,
+} from "../src/metadata";
 import type { DateParts } from "../src/naming";
 
 const parts = (
@@ -79,6 +83,10 @@ test("formatDateToParts — rejects invalid input", () => {
     { name: "partial date", input: "2023-07" },
     { name: "US slash format", input: "07/15/2023" },
     { name: "unix timestamp digits only", input: "1690000000" },
+    { name: "zero EXIF date", input: "0000:00:00 00:00:00" },
+    { name: "invalid month", input: "2023:13:15 12:00:00" },
+    { name: "invalid calendar day", input: "2023:02:29 12:00:00" },
+    { name: "invalid time", input: "2023:07:15 24:00:00" },
     { name: "null", input: null },
     { name: "undefined", input: undefined },
   ] as const;
@@ -99,6 +107,44 @@ test("resolveCommand finds an executable on PATH", () => {
     process.env.PATH = directory;
     assert.equal(resolveCommand("metadata-reader"), executable);
   } finally {
+    process.env.PATH = previousPath;
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("resolveCommand prefers a configured executable path with spaces", () => {
+  const directory = fs.mkdtempSync(
+    path.join(os.tmpdir(), "foldnize metadata tools "),
+  );
+  const executable = path.join(directory, "exiftool.exe");
+
+  try {
+    fs.writeFileSync(executable, "executable");
+    fs.chmodSync(executable, 0o755);
+    configureMetadataTools({ exiftool: executable });
+    assert.equal(resolveCommand("exiftool"), executable);
+  } finally {
+    configureMetadataTools({});
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("resolveCommand falls back to PATH for a missing configured executable", () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "foldnize-path-"));
+  const executableName = process.platform === "win32" ? "exiftool.exe" : "exiftool";
+  const executable = path.join(directory, executableName);
+  const previousPath = process.env.PATH;
+
+  try {
+    fs.writeFileSync(executable, "executable");
+    fs.chmodSync(executable, 0o755);
+    process.env.PATH = directory;
+    configureMetadataTools({
+      exiftool: path.join(directory, "missing-exiftool.exe"),
+    });
+    assert.equal(resolveCommand("exiftool"), executable);
+  } finally {
+    configureMetadataTools({});
     process.env.PATH = previousPath;
     fs.rmSync(directory, { recursive: true, force: true });
   }

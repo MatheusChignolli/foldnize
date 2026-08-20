@@ -9,7 +9,7 @@ import {
 import path from "node:path";
 import fs from "node:fs";
 
-import { organizeFolder } from "foldnize";
+import { configureMetadataTools, organizeFolder } from "foldnize";
 import type {
   FolderSelection,
   OrganizeResponse,
@@ -24,6 +24,31 @@ import type {
 // macOS shows "Electron" in the Dock tooltip unless the app name is set
 // before the ready event (dev mode uses Electron's bundle name by default).
 app.setName("Foldnize");
+
+function unpackedAsarPath(filePath: string): string {
+  return app.isPackaged
+    ? filePath.replace(
+        `${path.sep}app.asar${path.sep}`,
+        `${path.sep}app.asar.unpacked${path.sep}`,
+      )
+    : filePath;
+}
+
+function configureBundledMetadataTools(): void {
+  if (process.platform !== "win32") return;
+
+  try {
+    const vendoredPath = require("exiftool-vendored.exe") as unknown;
+    if (typeof vendoredPath === "string") {
+      configureMetadataTools({ exiftool: unpackedAsarPath(vendoredPath) });
+    }
+  } catch {
+    // Development installs may omit this Windows-only optional dependency.
+    // The library will still look for exiftool and ffprobe on PATH.
+  }
+}
+
+configureBundledMetadataTools();
 
 let mainWindow: BrowserWindow | null = null;
 

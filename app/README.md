@@ -25,6 +25,8 @@ This package is a thin UI shell on top of the [`foldnize`](https://www.npmjs.com
 ## Requirements
 
 - Node.js 22+
+- Windows desktop builds include their own ExifTool binary. End users do not
+  need to install or configure a metadata reader.
 - Optional but recommended on macOS:
   - [`exiftool`](https://exiftool.org/) — photos, audio, and most video metadata. `brew install exiftool`
   - [`ffprobe`](https://ffmpeg.org/ffprobe.html) — fallback for `.mp4` and `.mov` video files. `brew install ffmpeg`
@@ -42,15 +44,9 @@ npm start
 `npm start` runs the full pipeline: `clean → tsc (main + preload) → tsc (renderer) → copy HTML/CSS/assets → electron .`.
 If you only changed renderer or main files, use `npm run start:fast` (boots without rebuilding).
 
-The app depends on [`foldnize`](https://www.npmjs.com/package/foldnize) from the npm registry (`^1.0.0`). Bump the version in `package.json` to pick up new releases.
-
-> Tip — when developing the library in this repo, point at the local copy temporarily:
-> ```bash
-> # in app/package.json: "foldnize": "file:../library"
-> cd ../library && npm run build
-> cd ../app && npm install
-> ```
-> Or use `npm link` after building the library.
+The app depends on the local [`../library`](../library) workspace package so a
+desktop release is always built with the matching Foldnize core. Build the
+library before installing or building the app from a fresh checkout.
 
 ## Scripts
 

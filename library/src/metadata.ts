@@ -5,6 +5,15 @@ import type { DateParts } from "./naming";
 
 type DateReader = (filePath: string) => DateParts | null;
 
+export interface MetadataToolPaths {
+  /** Absolute path to an ExifTool executable. */
+  exiftool?: string | null;
+  /** Absolute path to an ffprobe executable. */
+  ffprobe?: string | null;
+}
+
+let configuredToolPaths: MetadataToolPaths = {};
+
 const MACOS_COMMAND_DIRS = [
   "/opt/homebrew/bin",
   "/usr/local/bin",
@@ -14,6 +23,22 @@ const MACOS_COMMAND_DIRS = [
 
 /** @internal Resolve tools even when a Finder-launched app has a minimal PATH. */
 export function resolveCommand(command: string): string | null {
+  const configuredPath =
+    command === "exiftool"
+      ? configuredToolPaths.exiftool
+      : command === "ffprobe"
+        ? configuredToolPaths.ffprobe
+        : undefined;
+
+  if (configuredPath) {
+    try {
+      fs.accessSync(configuredPath, fs.constants.X_OK);
+      return configuredPath;
+    } catch {
+      // Fall back to PATH when a configured executable is no longer present.
+    }
+  }
+
   const pathDirs = (process.env.PATH ?? "")
     .split(path.delimiter)
     .filter(Boolean);
@@ -21,9 +46,14 @@ export function resolveCommand(command: string): string | null {
     ...pathDirs,
     ...(process.platform === "darwin" ? MACOS_COMMAND_DIRS : []),
   ];
-  const names = process.platform === "win32"
-    ? [`${command}.exe`, command]
-    : [command];
+  const names =
+    process.platform === "win32"
+      ? [
+          `${command}.exe`,
+          ...(command === "exiftool" ? ["exiftool(-k).exe"] : []),
+          command,
+        ]
+      : [command];
 
   for (const directory of new Set(directories)) {
     for (const name of names) {
@@ -40,6 +70,16 @@ export function resolveCommand(command: string): string | null {
   return null;
 }
 
+/**
+ * Configure explicit metadata-reader executables.
+ *
+ * Desktop applications can use this to provide bundled binaries without
+ * modifying PATH. Missing or invalid paths safely fall back to PATH lookup.
+ */
+export function configureMetadataTools(paths: MetadataToolPaths): void {
+  configuredToolPaths = { ...paths };
+}
+
 export function formatDateToParts(
   dateString: string | null | undefined,
 ): DateParts | null {
@@ -52,14 +92,7 @@ export function formatDateToParts(
     /^(\d{4}):(\d{2}):(\d{2})(?:\s+(\d{2}):(\d{2}):(\d{2}))?/,
   );
   if (match) {
-    return {
-      year: match[1],
-      month: match[2],
-      day: match[3],
-      hour: match[4] || "00",
-      minute: match[5] || "00",
-      second: match[6] || "00",
-    };
+    return validatedDateParts(match);
   }
 
   // ISO style: 2023-07-15T14:23:10.000000Z
@@ -67,17 +100,42 @@ export function formatDateToParts(
     /^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2}):(\d{2}))?/,
   );
   if (match) {
-    return {
-      year: match[1],
-      month: match[2],
-      day: match[3],
-      hour: match[4] || "00",
-      minute: match[5] || "00",
-      second: match[6] || "00",
-    };
+    return validatedDateParts(match);
   }
 
   return null;
+}
+
+function validatedDateParts(match: RegExpMatchArray): DateParts | null {
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = Number(match[4] ?? 0);
+  const minute = Number(match[5] ?? 0);
+  const second = Number(match[6] ?? 0);
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+
+  if (
+    year < 1 ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > daysInMonth ||
+    hour > 23 ||
+    minute > 59 ||
+    second > 59
+  ) {
+    return null;
+  }
+
+  return {
+    year: match[1]!,
+    month: match[2]!,
+    day: match[3]!,
+    hour: match[4] || "00",
+    minute: match[5] || "00",
+    second: match[6] || "00",
+  };
 }
 
 function getDateFromExiftool(
@@ -97,13 +155,14 @@ function getDateFromExiftool(
         filePath,
       ],
       { encoding: "utf8" },
-    )
-      .trim()
-      .split("\n")
-      .map((line) => line.trim())
-      .find(Boolean);
+    );
 
-    return formatDateToParts(output);
+    for (const line of output.split(/\r?\n/)) {
+      const parts = formatDateToParts(line);
+      if (parts) return parts;
+    }
+
+    return null;
   } catch {
     return null;
   }

@@ -12,4 +12,9 @@ export {
   Mode,
 } from "./naming";
 export type { DateParts } from "./naming";
-export { formatDateToParts, getOriginalFileDateParts } from "./metadata";
+export {
+  configureMetadataTools,
+  formatDateToParts,
+  getOriginalFileDateParts,
+} from "./metadata";
+export type { MetadataToolPaths } from "./metadata";

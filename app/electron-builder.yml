@@ -11,6 +11,9 @@ files:
   - package.json
 
 asar: true
+asarUnpack:
+  # ExifTool launches as a child process and needs its adjacent Perl runtime.
+  - node_modules/exiftool-vendored.exe/**/*
 
 mac:
   category: public.app-category.productivity
