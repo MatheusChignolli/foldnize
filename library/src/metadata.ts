@@ -14,6 +14,15 @@ export interface MetadataToolPaths {
 
 let configuredToolPaths: MetadataToolPaths = {};
 
+/** @internal Date tags in preferred order, from local/original to UTC fallback. */
+export const EXIF_DATE_TAGS = [
+  "-DateTimeOriginal",
+  "-CreationDate",
+  "-CreateDate",
+  "-MediaCreateDate",
+  "-TrackCreateDate",
+] as const;
+
 const MACOS_COMMAND_DIRS = [
   "/opt/homebrew/bin",
   "/usr/local/bin",
@@ -147,11 +156,7 @@ function getDateFromExiftool(
       executable,
       [
         "-s3",
-        "-DateTimeOriginal",
-        "-CreateDate",
-        "-MediaCreateDate",
-        "-TrackCreateDate",
-        "-CreationDate",
+        ...EXIF_DATE_TAGS,
         filePath,
       ],
       { encoding: "utf8" },

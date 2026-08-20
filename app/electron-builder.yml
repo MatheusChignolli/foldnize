@@ -9,11 +9,13 @@ directories:
 files:
   - dist/**/*
   - package.json
+  # The Windows binary is copied into dist/metadata-tools during build.
+  - "!node_modules/exiftool-vendored.exe/**/*"
 
 asar: true
 asarUnpack:
   # ExifTool launches as a child process and needs its adjacent Perl runtime.
-  - node_modules/exiftool-vendored.exe/**/*
+  - dist/metadata-tools/exiftool/**/*
 
 mac:
   category: public.app-category.productivity

@@ -37,14 +37,12 @@ function unpackedAsarPath(filePath: string): string {
 function configureBundledMetadataTools(): void {
   if (process.platform !== "win32") return;
 
-  try {
-    const vendoredPath = require("exiftool-vendored.exe") as unknown;
-    if (typeof vendoredPath === "string") {
-      configureMetadataTools({ exiftool: unpackedAsarPath(vendoredPath) });
-    }
-  } catch {
-    // Development installs may omit this Windows-only optional dependency.
-    // The library will still look for exiftool and ffprobe on PATH.
+  const executable = unpackedAsarPath(
+    path.join(__dirname, "metadata-tools", "exiftool", "exiftool.exe"),
+  );
+
+  if (fs.existsSync(executable)) {
+    configureMetadataTools({ exiftool: executable });
   }
 }
 

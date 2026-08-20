@@ -6,6 +6,7 @@ import path from "node:path";
 
 import {
   configureMetadataTools,
+  EXIF_DATE_TAGS,
   formatDateToParts,
   resolveCommand,
 } from "../src/metadata";
@@ -19,6 +20,16 @@ const parts = (
   minute = "00",
   second = "00",
 ): DateParts => ({ year, month, day, hour, minute, second });
+
+test("ExifTool prefers local/original creation dates before UTC fallbacks", () => {
+  assert.deepEqual(EXIF_DATE_TAGS, [
+    "-DateTimeOriginal",
+    "-CreationDate",
+    "-CreateDate",
+    "-MediaCreateDate",
+    "-TrackCreateDate",
+  ]);
+});
 
 test("formatDateToParts — valid date strings", () => {
   const cases = [
