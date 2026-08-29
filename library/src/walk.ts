@@ -5,29 +5,42 @@ import { VALID_EXTENSIONS } from "./naming";
 /**
  * Recursively list all supported media files inside `dir`.
  * When `scanSubfolders` is `false`, only files directly inside `dir` are
- * returned (no recursion into any subfolder).
+ * returned (no recursion into any subfolder). `maxFiles` stops the scan once
+ * that many supported files have been collected; `-1` means unlimited.
  */
-export function walk(dir: string, scanSubfolders: boolean): string[] {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  let files: string[] = [];
+export function walk(
+  dir: string,
+  scanSubfolders: boolean,
+  maxFiles = -1,
+): string[] {
+  const files: string[] = [];
 
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
+  function visit(currentDir: string): void {
+    const entries = fs
+      .readdirSync(currentDir, { withFileTypes: true })
+      .sort((left, right) => left.name.localeCompare(right.name));
 
-    if (entry.isDirectory()) {
-      if (!scanSubfolders) continue;
-      files = files.concat(walk(fullPath, scanSubfolders));
-      continue;
-    }
+    for (const entry of entries) {
+      if (maxFiles !== -1 && files.length >= maxFiles) return;
 
-    if (!entry.isFile()) continue;
-    if (entry.name.startsWith("._")) continue;
+      const fullPath = path.join(currentDir, entry.name);
 
-    const ext = path.extname(entry.name).toLowerCase();
-    if (VALID_EXTENSIONS.has(ext)) {
-      files.push(fullPath);
+      if (entry.isDirectory()) {
+        if (!scanSubfolders) continue;
+        visit(fullPath);
+        continue;
+      }
+
+      if (!entry.isFile()) continue;
+      if (entry.name.startsWith("._")) continue;
+
+      const ext = path.extname(entry.name).toLowerCase();
+      if (VALID_EXTENSIONS.has(ext)) {
+        files.push(fullPath);
+      }
     }
   }
 
+  visit(dir);
   return files;
 }

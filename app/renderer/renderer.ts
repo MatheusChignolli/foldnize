@@ -26,6 +26,7 @@ const versionPill = document.getElementById(
 ) as HTMLButtonElement;
 const versionLabel = document.getElementById("version-label") as HTMLElement;
 let updateReleaseUrl: string | null = null;
+let isRunning = false;
 
 versionPill.addEventListener("click", () => {
   if (updateReleaseUrl) {
@@ -43,7 +44,7 @@ async function refreshVersionPill(): Promise<void> {
 
   updateReleaseUrl = update.releaseUrl;
   versionLabel.textContent = `v${update.currentVersion} · Update v${update.latestVersion}`;
-  versionPill.disabled = false;
+  versionPill.disabled = isRunning;
   versionPill.classList.add("has-update");
   versionPill.setAttribute(
     "aria-label",
@@ -61,6 +62,7 @@ interface RendererState {
 const selectBtn = document.getElementById("select-folder") as HTMLButtonElement;
 const runBtn = document.getElementById("run") as HTMLButtonElement;
 const clearBtn = document.getElementById("clear-log") as HTMLButtonElement;
+const appMainEl = document.querySelector(".app-main") as HTMLElement;
 const folderPathEl = document.getElementById("folder-path") as HTMLElement;
 const folderCountEl = document.getElementById("folder-count") as HTMLElement;
 const dryRunEl = document.getElementById("dry-run") as HTMLInputElement;
@@ -87,6 +89,13 @@ const organizeYearMonthEl = document.getElementById(
 const scanSubfoldersEl = document.getElementById(
   "scan-subfolders",
 ) as HTMLInputElement;
+const fileLimitEl = document.getElementById("file-limit") as HTMLInputElement;
+const unlimitedFilesEl = document.getElementById(
+  "unlimited-files",
+) as HTMLInputElement;
+const fileLimitFeedback = document.getElementById(
+  "file-limit-feedback",
+) as HTMLParagraphElement;
 
 const state: RendererState = {
   folderPath: null,
@@ -144,6 +153,17 @@ customInput.addEventListener("input", () => {
   refreshRunButton();
 });
 
+fileLimitEl.addEventListener("input", () => {
+  refreshFileLimitFeedback();
+  refreshRunButton();
+});
+
+unlimitedFilesEl.addEventListener("change", () => {
+  fileLimitEl.disabled = unlimitedFilesEl.checked;
+  refreshFileLimitFeedback();
+  refreshRunButton();
+});
+
 runBtn.addEventListener("click", async () => {
   if (!state.folderPath) return;
 
@@ -152,24 +172,36 @@ runBtn.addEventListener("click", async () => {
   const customName = mode === MODE.CUSTOM ? customInput.value : undefined;
   const organizeIntoYearMonth = organizeYearMonthEl.checked;
   const scanSubfolders = scanSubfoldersEl.checked;
+  const maxFiles = unlimitedFilesEl.checked ? -1 : fileLimitEl.valueAsNumber;
 
   clearLog();
   hideSummary();
   setRunning(true);
 
-  const response = await window.foldnize.organize({
-    root: state.folderPath,
-    mode,
-    dryRun,
-    customName,
-    organizeIntoYearMonth,
-    scanSubfolders,
-  });
+  try {
+    const response = await window.foldnize.organize({
+      root: state.folderPath,
+      mode,
+      dryRun,
+      customName,
+      organizeIntoYearMonth,
+      scanSubfolders,
+      maxFiles,
+    });
 
-  setRunning(false);
-
-  if (response.ok) {
-    showSummary(response.summary);
+    if (response.ok) {
+      showSummary(response.summary);
+    }
+  } catch (error) {
+    appendLog({
+      level: "error" as LogEntry["level"],
+      message:
+        error instanceof Error
+          ? error.message
+          : "The organization worker could not be started.",
+    });
+  } finally {
+    setRunning(false);
   }
 });
 
@@ -245,8 +277,29 @@ function refreshRunButton(): void {
   const customOk =
     mode !== MODE.CUSTOM ||
     getSanitizedCustomName(customInput.value).length > 0;
+  const fileLimitOk = getFileLimitError() === null;
 
-  runBtn.disabled = !(hasFolder && customOk);
+  runBtn.disabled = !(hasFolder && customOk && fileLimitOk);
+}
+
+function getFileLimitError(): string | null {
+  if (unlimitedFilesEl.checked) return null;
+
+  const value = fileLimitEl.valueAsNumber;
+  if (!Number.isInteger(value) || value < 1 || value > 1000) {
+    return "Enter a whole number from 1 to 1000, or select No limit.";
+  }
+
+  return null;
+}
+
+function refreshFileLimitFeedback(): void {
+  const error = getFileLimitError();
+  const invalid = error !== null;
+  fileLimitEl.classList.toggle("invalid", invalid);
+  fileLimitEl.setAttribute("aria-invalid", String(invalid));
+  fileLimitFeedback.hidden = !invalid;
+  fileLimitFeedback.textContent = error ?? "";
 }
 
 function refreshDryRunWarning(): void {
@@ -256,6 +309,8 @@ function refreshDryRunWarning(): void {
 refreshDryRunWarning();
 
 function appendLog(entry: LogEntry): void {
+  const wasNearBottom =
+    logEl.scrollHeight - logEl.scrollTop - logEl.clientHeight < 24;
   const empty = logEl.querySelector(".log-empty");
   if (empty) empty.remove();
 
@@ -263,7 +318,9 @@ function appendLog(entry: LogEntry): void {
   line.className = `log-line ${entry.level || "info"}`;
   line.textContent = entry.message;
   logEl.appendChild(line);
-  logEl.scrollTop = logEl.scrollHeight;
+  if (wasNearBottom) {
+    logEl.scrollTop = logEl.scrollHeight;
+  }
 }
 
 function clearLog(): void {
@@ -271,17 +328,28 @@ function clearLog(): void {
     '<div class="log-empty">Logs will appear here once you run.</div>';
 }
 
-function setRunning(isRunning: boolean): void {
-  runBtn.disabled = isRunning;
-  selectBtn.disabled = isRunning;
-  customInput.disabled = isRunning;
-  dryRunEl.disabled = isRunning;
-  organizeYearMonthEl.disabled = isRunning;
-  scanSubfoldersEl.disabled = isRunning;
+function setRunning(running: boolean): void {
+  // Keep the document scrollable, but prevent any action from being changed
+  // while the worker is processing the current immutable options snapshot.
+  isRunning = running;
+  document.body.classList.toggle("is-running", running);
+  appMainEl.setAttribute("aria-busy", String(running));
+  runBtn.disabled = running;
+  selectBtn.disabled = running;
+  clearBtn.disabled = running;
+  websiteLinkBtn.disabled = running;
+  versionPill.disabled = running || !updateReleaseUrl;
+  customInput.disabled = running;
+  dryRunEl.disabled = running;
+  organizeYearMonthEl.disabled = running;
+  scanSubfoldersEl.disabled = running;
+  fileLimitEl.disabled = running || unlimitedFilesEl.checked;
+  unlimitedFilesEl.disabled = running;
   modeInputs.forEach((input) => {
-    input.disabled = isRunning;
+    input.disabled = running;
   });
-  runBtn.textContent = isRunning ? "Organizing…" : "Organize folder";
+  runBtn.textContent = running ? "Organizing…" : "Organize folder";
+  if (!running) refreshRunButton();
 }
 
 function showSummary(summary: OrganizeSummary): void {

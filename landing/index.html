@@ -124,7 +124,7 @@
             "downloadUrl": "https://github.com/MatheusChignolli/foldnize/releases/latest",
             "installUrl": "https://github.com/MatheusChignolli/foldnize/releases/latest",
             "screenshot": "https://foldnize.com/assets/og-image.svg",
-            "featureList": "Three renaming modes, Year/Month folder sorting, dry-run preview, EXIF and QuickTime metadata, local-first processing",
+            "featureList": "Three renaming modes, configurable file limits, Year/Month folder sorting, dry-run preview, EXIF and QuickTime metadata, local-first processing",
             "offers": {
               "@type": "Offer",
               "price": "0",
@@ -221,7 +221,8 @@
             Foldnize is a local-first photo organizer that renames photos by
             EXIF date, organizes iPhone photos and videos by metadata date, and
             sorts media into <strong class="hero-sub-strong">Year/Month</strong>
-            folders. Preview every change with dry-run. Nothing is uploaded.
+            folders. Limit each run to the number of files you choose and
+            preview every change with dry-run. Nothing is uploaded.
           </p>
 
           <div class="hero-ctas" id="downloads">
@@ -421,7 +422,8 @@
               <h3>Dry-run preview</h3>
               <p>
                 See exactly what would change before a single byte moves on
-                disk. Toggle dry-run on — it's the safe default.
+                disk. The 50-file default limit also applies to previews, and
+                you can choose 1–1000 files or an unlimited run.
               </p>
             </article>
 
@@ -491,10 +493,10 @@
               <p>
                 Walks every nested folder by default, or stays on the surface
                 with one toggle. Scans for
-                <code>.jpeg</code>, <code>.jpg</code>, <code>.mov</code>,
-                <code>.mp3</code>, <code>.mp4</code>, and <code>.png</code>
-                files. Already-formatted files and macOS junk (<code>._*</code>)
-                are skipped automatically.
+                <code>.heic</code>, <code>.jpeg</code>, <code>.jpg</code>,
+                <code>.mov</code>, <code>.mp3</code>, <code>.mp4</code>, and
+                <code>.png</code> files. Already-formatted files and macOS junk
+                (<code>._*</code>) are skipped automatically.
               </p>
             </article>
           </div>
@@ -569,7 +571,8 @@
                     <h3>Preview, then organize</h3>
                     <p>
                       Choose a renaming mode, keep Dry run enabled for the first
-                      pass, review the result, and then apply it.
+                      pass, set the file limit, review the result, and then
+                      apply it.
                     </p>
                   </div>
                 </li>
@@ -584,7 +587,7 @@
                 <span class="code-title">~/Projects · zsh</span>
               </div>
               <pre><code><span class="tok-comment"># Preview: rename photos by EXIF date</span>
-<span class="tok-prompt">$</span> <span class="tok-cmd">npx foldnize</span> --root=./photos --mode=replace --dry-run
+<span class="tok-prompt">$</span> <span class="tok-cmd">npx foldnize</span> --root=./photos --mode=replace --limit=50 --dry-run
 
 <span class="tok-comment"># Sort media into Year/Month folders</span>
 <span class="tok-prompt">$</span> <span class="tok-cmd">npx foldnize</span> --root=./photos --mode=prefix --year-month</code></pre>
@@ -633,6 +636,7 @@
   customName: <span class="tok-string">"vacation"</span>,        <span class="tok-comment">// required when mode is "custom"</span>
   organizeIntoYearMonth: <span class="tok-keyword">true</span>,   <span class="tok-comment">// move into &lt;root&gt;/YYYY/MM/</span>
   scanSubfolders: <span class="tok-keyword">true</span>,          <span class="tok-comment">// recurse (default); false = top-level only</span>
+  maxFiles: 50,                       <span class="tok-comment">// 1–1000; -1 = unlimited</span>
   dryRun: <span class="tok-keyword">true</span>,
   onLog: ({ message }) =&gt; <span class="tok-fn">console</span>.log(message),
 });</code></pre>

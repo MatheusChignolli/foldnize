@@ -20,6 +20,11 @@
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "include": ["main.ts", "preload.ts", "bridge-types.d.ts"],
+  "include": [
+    "main.ts",
+    "preload.ts",
+    "organize-worker.ts",
+    "bridge-types.d.ts"
+  ],
   "exclude": ["node_modules", "dist", "renderer"]
 }

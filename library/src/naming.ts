@@ -17,6 +17,7 @@ export interface DateParts {
 }
 
 export const VALID_EXTENSIONS: ReadonlySet<string> = new Set([
+  ".heic",
   ".mov",
   ".mp3",
   ".mp4",

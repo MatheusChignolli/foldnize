@@ -357,6 +357,11 @@ select {
   cursor: not-allowed;
 }
 
+body.is-running button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .btn-primary {
   background: var(--accent-soft);
   border-color: rgba(108, 140, 255, 0.4);
@@ -539,6 +544,46 @@ select {
 .text-input.invalid:focus {
   border-color: var(--danger);
   box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.28);
+}
+
+.file-limit-control {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+
+.file-limit-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.file-limit-input-wrap > label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.number-input {
+  width: 150px;
+}
+
+.checkbox.checkbox-compact {
+  min-height: 38px;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.checkbox.checkbox-compact input {
+  margin-top: 0;
+}
+
+.field-help {
+  margin: 8px 0 0;
+  font-size: 11px;
+}
+
+.file-limit-control + .field-help + .custom-name-feedback {
+  margin-top: 6px;
 }
 
 .checkbox {

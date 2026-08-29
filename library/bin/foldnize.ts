@@ -7,6 +7,7 @@ import {
   organizeFolder,
   LogLevel,
   Mode,
+  DEFAULT_FILE_LIMIT,
   formatSupportedExtensions,
   type LogEntry,
 } from "../src";
@@ -33,6 +34,7 @@ interface CliOptions {
   dryRun: boolean;
   organizeIntoYearMonth: boolean;
   scanSubfolders: boolean;
+  maxFiles: number;
   help: boolean;
   version: boolean;
 }
@@ -49,6 +51,7 @@ function parseArgs(argv: readonly string[]): CliOptions {
     dryRun: false,
     organizeIntoYearMonth: false,
     scanSubfolders: true,
+    maxFiles: DEFAULT_FILE_LIMIT,
     help: false,
     version: false,
   };
@@ -64,6 +67,12 @@ function parseArgs(argv: readonly string[]): CliOptions {
       args.organizeIntoYearMonth = true;
     } else if (arg === "--no-subfolders" || arg === "--top-level") {
       args.scanSubfolders = false;
+    } else if (arg.startsWith("--limit=") || arg.startsWith("--max-files=")) {
+      const rawValue = arg.split("=").slice(1).join("=").trim();
+      if (!/^-?\d+$/.test(rawValue)) {
+        throw new Error("--limit must be -1 (unlimited) or an integer from 1 to 1000.");
+      }
+      args.maxFiles = Number(rawValue);
     } else if (arg.startsWith("--mode=")) {
       const rawValue = arg.split("=")[1];
       const value = rawValue?.trim().toLowerCase();
@@ -102,6 +111,7 @@ Options:
   --custom-name=NAME        Required when --mode=custom
   --year-month              Also move files into <root>/YYYY/MM/ subfolders
   --no-subfolders           Don't recurse — only top-level files
+  --limit=NUMBER            Process at most 1–1000 files (default: 50; -1: unlimited)
   --dry-run                 Preview changes without touching disk
   --help, -h                Show this help
   --version, -v             Show version
@@ -116,6 +126,7 @@ Examples:
   foldnize --root=./photos --mode=replace --year-month
   foldnize --root=./photos --mode=custom --custom-name=vacation
   foldnize --root=./photos --year-month --no-subfolders
+  foldnize --root=./photos --limit=100 --dry-run
 
 Supported formats:
   ${formatSupportedExtensions()}
@@ -246,6 +257,7 @@ function main(): void {
       customName: options.customName,
       organizeIntoYearMonth: options.organizeIntoYearMonth,
       scanSubfolders: options.scanSubfolders,
+      maxFiles: options.maxFiles,
       onLog: logEntry,
     });
 

@@ -10,6 +10,10 @@ import {
   Mode,
 } from "./naming";
 
+export const DEFAULT_FILE_LIMIT = 50;
+export const MAX_FILE_LIMIT = 1000;
+export const UNLIMITED_FILE_LIMIT = -1;
+
 export enum LogLevel {
   INFO = "info",
   RENAMED = "renamed",
@@ -46,6 +50,11 @@ export interface OrganizeOptions {
    * Defaults to `true`.
    */
   scanSubfolders?: boolean;
+  /**
+   * Maximum number of supported files to count and process. Defaults to `50`.
+   * Use `-1` for no limit; finite limits must be integers from `1` to `1000`.
+   */
+  maxFiles?: number;
   /** Streamed log callback. */
   onLog?: LogFn;
 }
@@ -155,6 +164,7 @@ export function organizeFolder({
   customName,
   organizeIntoYearMonth = false,
   scanSubfolders = true,
+  maxFiles = DEFAULT_FILE_LIMIT,
   onLog,
 }: OrganizeOptions): OrganizeSummary {
   if (!root) {
@@ -163,6 +173,16 @@ export function organizeFolder({
 
   if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) {
     throw new Error(`Invalid folder: ${root}`);
+  }
+
+  if (
+    !Number.isInteger(maxFiles) ||
+    (maxFiles !== UNLIMITED_FILE_LIMIT &&
+      (maxFiles < 1 || maxFiles > MAX_FILE_LIMIT))
+  ) {
+    throw new Error(
+      `maxFiles must be -1 (unlimited) or an integer from 1 to ${MAX_FILE_LIMIT}.`,
+    );
   }
 
   let safeCustomName = "";
@@ -189,9 +209,13 @@ export function organizeFolder({
     `Sort into Year/Month folders: ${organizeIntoYearMonth ? "yes" : "no"}`,
   );
   log(LogLevel.INFO, `Scan subfolders: ${scanSubfolders ? "yes" : "no"}`);
+  log(
+    LogLevel.INFO,
+    `File limit: ${maxFiles === UNLIMITED_FILE_LIMIT ? "unlimited" : maxFiles}`,
+  );
   log(LogLevel.INFO, `Dry run: ${dryRun ? "yes" : "no"}`);
 
-  const files = walk(root, scanSubfolders);
+  const files = walk(root, scanSubfolders, maxFiles);
   log(LogLevel.INFO, `Found ${files.length} supported file(s).`);
 
   let renamed = 0;

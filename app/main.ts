@@ -8,16 +8,21 @@ import {
 } from "electron";
 import path from "node:path";
 import fs from "node:fs";
+import { Worker } from "node:worker_threads";
 
-import { configureMetadataTools, organizeFolder } from "foldnize";
 import type {
   FolderSelection,
   OrganizeResponse,
   UpdateInfo,
 } from "./bridge-types";
 import type {
+  OrganizeWorkerInput,
+  OrganizeWorkerMessage,
+} from "./organize-worker";
+import type {
   LogEntry,
   LogLevel,
+  MetadataToolPaths,
   OrganizeOptions,
 } from "foldnize";
 
@@ -34,19 +39,19 @@ function unpackedAsarPath(filePath: string): string {
     : filePath;
 }
 
-function configureBundledMetadataTools(): void {
-  if (process.platform !== "win32") return;
+function getBundledMetadataTools(): MetadataToolPaths | undefined {
+  if (process.platform !== "win32") return undefined;
 
   const executable = unpackedAsarPath(
     path.join(__dirname, "metadata-tools", "exiftool", "exiftool.exe"),
   );
 
   if (fs.existsSync(executable)) {
-    configureMetadataTools({ exiftool: executable });
+    return { exiftool: executable };
   }
-}
 
-configureBundledMetadataTools();
+  return undefined;
+}
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -234,20 +239,55 @@ ipcMain.handle(
   "organize:run",
   async (event, options: OrganizeOptions): Promise<OrganizeResponse> => {
     const sendLog = (entry: LogEntry): void => {
-      event.sender.send("organize:log", entry);
+      if (!event.sender.isDestroyed()) {
+        event.sender.send("organize:log", entry);
+      }
     };
 
-    try {
-      const summary = organizeFolder({
-        ...options,
-        onLog: sendLog,
+    const workerInput: OrganizeWorkerInput = {
+      options: { ...options, onLog: undefined },
+      metadataTools: getBundledMetadataTools(),
+    };
+    const worker = new Worker(path.join(__dirname, "organize-worker.js"), {
+      workerData: workerInput,
+    });
+
+    return new Promise((resolve) => {
+      let settled = false;
+
+      const finish = (response: OrganizeResponse): void => {
+        if (settled) return;
+        settled = true;
+        resolve(response);
+      };
+
+      const fail = (message: string): void => {
+        sendLog({ level: "error" as LogLevel, message });
+        finish({ ok: false, error: message });
+      };
+
+      worker.on("message", (message: OrganizeWorkerMessage) => {
+        if (message.type === "log") {
+          sendLog(message.entry);
+          return;
+        }
+
+        finish(message.response);
       });
 
-      return { ok: true, summary };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      sendLog({ level: "error" as LogLevel, message });
-      return { ok: false, error: message };
-    }
+      worker.on("error", (error) => {
+        fail(error instanceof Error ? error.message : String(error));
+      });
+
+      worker.on("exit", (code) => {
+        if (!settled) {
+          fail(
+            code === 0
+              ? "The organization worker exited before returning a result."
+              : `The organization worker stopped with exit code ${code}.`,
+          );
+        }
+      });
+    });
   },
 );

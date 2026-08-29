@@ -20,6 +20,7 @@ beforeEach(() => {
 
   write("top.jpg");
   write("TOP.JPEG");
+  write("portrait.HEIC");
   write("clip.MOV");
   write("audio.mp3");
   write("notes.txt");
@@ -51,13 +52,20 @@ test("walk — recursive scan finds all supported media", () => {
         "clip.MOV",
         "deep.png",
         "photo.jpg",
+        "portrait.HEIC",
         "top.jpg",
       ],
     },
     {
       name: "scanSubfolders: false — top level only",
       scanSubfolders: false,
-      expected: ["TOP.JPEG", "audio.mp3", "clip.MOV", "top.jpg"],
+      expected: [
+        "TOP.JPEG",
+        "audio.mp3",
+        "clip.MOV",
+        "portrait.HEIC",
+        "top.jpg",
+      ],
     },
   ] as const;
 
@@ -81,7 +89,13 @@ test("walk — never returns junk or unsupported files", () => {
     assert.ok(!names.includes(name), `should exclude ${name}`);
   }
 
-  const mustInclude = ["top.jpg", "TOP.JPEG", "clip.MOV", "audio.mp3"] as const;
+  const mustInclude = [
+    "top.jpg",
+    "TOP.JPEG",
+    "portrait.HEIC",
+    "clip.MOV",
+    "audio.mp3",
+  ] as const;
 
   for (const name of mustInclude) {
     assert.ok(names.includes(name), `should include ${name}`);
@@ -92,6 +106,16 @@ test("walk — extension matching is case-insensitive", () => {
   const files = walk(root, true);
   assert.ok(files.some((f) => path.basename(f) === "TOP.JPEG"));
   assert.ok(files.some((f) => path.basename(f) === "clip.MOV"));
+});
+
+test("walk — stops after the requested number of supported files", () => {
+  const files = walk(root, true, 3);
+
+  assert.equal(files.length, 3);
+  assert.deepEqual(
+    files.map((file) => path.relative(root, file)),
+    [path.join("2023", "06", "archive.jpg"), "audio.mp3", "clip.MOV"],
+  );
 });
 
 test("walk — empty directory returns no files", () => {

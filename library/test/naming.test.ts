@@ -35,7 +35,15 @@ const DATE_ONLY_STAMP: DateParts = {
 };
 
 test("VALID_EXTENSIONS includes every supported media type", () => {
-  const expected = [".mov", ".mp3", ".mp4", ".jpg", ".jpeg", ".png"] as const;
+  const expected = [
+    ".heic",
+    ".mov",
+    ".mp3",
+    ".mp4",
+    ".jpg",
+    ".jpeg",
+    ".png",
+  ] as const;
 
   for (const ext of expected) {
     assert.ok(VALID_EXTENSIONS.has(ext), `missing extension ${ext}`);
@@ -47,12 +55,12 @@ test("VALID_EXTENSIONS includes every supported media type", () => {
 test("formatSupportedExtensions lists every extension in sorted order", () => {
   assert.equal(
     formatSupportedExtensions(),
-    ".jpeg, .jpg, .mov, .mp3, .mp4, .png",
+    ".heic, .jpeg, .jpg, .mov, .mp3, .mp4, .png",
   );
 });
 
 test("VALID_EXTENSIONS rejects common non-media extensions", () => {
-  const rejected = [".txt", ".pdf", ".heic", ".gif", ".webp", ".zip", ""] as const;
+  const rejected = [".txt", ".pdf", ".gif", ".webp", ".zip", ""] as const;
 
   for (const ext of rejected) {
     assert.ok(!VALID_EXTENSIONS.has(ext), `should not include ${ext}`);

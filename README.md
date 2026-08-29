@@ -2,6 +2,9 @@
 
 Foldnize organizes photos and videos by their embedded **original date** — both as a desktop app and as a reusable library.
 
+Runs are capped at **50 supported files by default**. Choose a limit from 1 to
+1000 in the desktop app or library, or explicitly select unlimited processing.
+
 This repository is a small monorepo with three independent projects:
 
 ```
@@ -36,7 +39,7 @@ When developing the library in this repo, temporarily use `file:../library` or `
 
 - Node.js **22+**
 - macOS, Linux, or Windows
-- Supported formats: `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
+- Supported formats: `.heic`, `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
 - Optional but recommended:
   - `exiftool` — `brew install exiftool` — photos, audio, and most video metadata
   - `ffprobe` — `brew install ffmpeg` — fallback for `.mp4` and `.mov` video files

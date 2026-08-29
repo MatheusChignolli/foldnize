@@ -105,6 +105,11 @@ test("organizeFolder — validation errors", () => {
       run: () => organizeFolder({ root, mode: Mode.CUSTOM, customName: "   " }),
       message: /Custom mode requires a non-empty name/i,
     },
+    ...[0, -2, 1.5, 1001, Number.NaN].map((maxFiles) => ({
+      name: `invalid maxFiles: ${maxFiles}`,
+      run: () => organizeFolder({ root, maxFiles }),
+      message: /maxFiles must be -1 .* or an integer from 1 to 1000/i,
+    })),
   ] as const;
 
   for (const { name, run, message } of cases) {
@@ -188,6 +193,62 @@ test("organizeFolder — dry-run never writes to disk", () => {
       `${name} — target not created`,
     );
   }
+});
+
+test("organizeFolder — defaults to processing and counting at most 50 files", () => {
+  const metadata: Record<string, DateParts> = {};
+  for (let index = 0; index < 51; index += 1) {
+    const name = `photo-${String(index).padStart(2, "0")}.jpg`;
+    writeFile(name);
+    metadata[name] = STAMP;
+  }
+
+  const summary = withFakeMetadata(metadata, () =>
+    organizeFolder({ root, mode: Mode.PREFIX, dryRun: true }),
+  );
+
+  assert.deepEqual(summary, { found: 50, renamed: 50, moved: 0, skipped: 0 });
+  assert.ok(fs.existsSync(path.join(root, "photo-50.jpg")));
+});
+
+test("organizeFolder — explicit limit applies equally to dry-run", () => {
+  writeFile("a.jpg");
+  writeFile("b.jpg");
+  writeFile("c.jpg");
+
+  const summary = withFakeMetadata(
+    { "a.jpg": STAMP, "b.jpg": STAMP, "c.jpg": STAMP },
+    () =>
+      organizeFolder({
+        root,
+        mode: Mode.PREFIX,
+        dryRun: true,
+        maxFiles: 2,
+        onLog: (entry) => collectedLogs.push(entry),
+      }),
+  );
+
+  assert.deepEqual(summary, { found: 2, renamed: 2, moved: 0, skipped: 0 });
+  assert.equal(
+    collectedLogs.filter((entry) => entry.level === LogLevel.DRY).length,
+    2,
+  );
+});
+
+test("organizeFolder — -1 disables the default file limit", () => {
+  const metadata: Record<string, DateParts> = {};
+  for (let index = 0; index < 51; index += 1) {
+    const name = `unlimited-${String(index).padStart(2, "0")}.jpg`;
+    writeFile(name);
+    metadata[name] = STAMP;
+  }
+
+  const summary = withFakeMetadata(metadata, () =>
+    organizeFolder({ root, mode: Mode.PREFIX, dryRun: true, maxFiles: -1 }),
+  );
+
+  assert.equal(summary.found, 51);
+  assert.equal(summary.renamed, 51);
 });
 
 test("organizeFolder — year/month sorting", () => {

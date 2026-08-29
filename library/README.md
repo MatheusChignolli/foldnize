@@ -5,6 +5,7 @@ Organize photos and videos by their embedded EXIF/QuickTime **original date**, p
 - Three renaming modes: **prefix** · **replace** · **custom**
 - Optional **Year/Month folder sorting** (`<root>/YYYY/MM/`)
 - **Dry-run** preview before touching disk
+- Safe **50-file default limit**, configurable from 1–1000 (`-1` for unlimited)
 - Streamed log of every action via callback
 - 100% local — no network, no telemetry
 - Written in **TypeScript**, ships compiled JS + `.d.ts` types, **zero runtime dependencies**
@@ -25,7 +26,7 @@ brew install exiftool       # photos, audio, and most video metadata
 brew install ffmpeg         # ffprobe — fallback for .mp4 and .mov video files
 ```
 
-Supported formats: `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
+Supported formats: `.heic`, `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
 
 Files without parseable date metadata are silently skipped — never crash.
 
@@ -58,6 +59,7 @@ const summary: OrganizeSummary = organizeFolder({
   customName: "vacation", // required when mode === Mode.CUSTOM
   organizeIntoYearMonth: true, // move files into <root>/YYYY/MM/
   scanSubfolders: true, // recurse (default); false = top-level only
+  maxFiles: 50, // default; use 1–1000 or -1 for unlimited
   dryRun: true, // preview only — no disk writes
   onLog: ({ level, message }) => console.log(`[${level}] ${message}`),
 });
@@ -105,6 +107,9 @@ import {
   formatDateToParts, // (dateString: string | null) => DateParts | null
   VALID_EXTENSIONS, // ReadonlySet — see formatSupportedExtensions()
   formatSupportedExtensions, // () => ".jpeg", ".jpg", ".mov", …
+  DEFAULT_FILE_LIMIT, // 50
+  MAX_FILE_LIMIT, // 1000
+  UNLIMITED_FILE_LIMIT, // -1
   type DateParts,
   type Mode,
   type LogEntry,
@@ -123,6 +128,8 @@ npx foldnize --root=./photos --mode=prefix --dry-run
 npx foldnize --root=./photos --mode=replace --year-month
 npx foldnize --root=./photos --mode=custom --custom-name=vacation
 npx foldnize --root=./photos --year-month --no-subfolders
+npx foldnize --root=./photos --limit=100 --dry-run
+npx foldnize --root=./photos --limit=-1 --dry-run # unlimited
 ```
 
 ### Options
@@ -133,6 +140,7 @@ npx foldnize --root=./photos --year-month --no-subfolders
 --custom-name=NAME        Required when --mode=custom
 --year-month              Move files into <root>/YYYY/MM/
 --no-subfolders           Don't recurse — only top-level files
+--limit=NUMBER            Process 1–1000 files (default: 50; -1 = unlimited)
 --dry-run                 Preview without touching disk
 --help, -h
 --version, -v
@@ -141,6 +149,7 @@ npx foldnize --root=./photos --year-month --no-subfolders
 ### Behaviour notes
 
 - **macOS junk files** (`._*`) are always skipped.
+- **File limits** apply before metadata is read and also apply to dry runs. Files beyond the limit are not processed or included in `found`.
 - **Collisions** are handled by appending `-1`, `-2`, … to the target name.
 - **Already-formatted files** are detected and skipped for renames; they still get moved if `--year-month` is on and their date metadata points to a different folder than where they currently sit.
 - **Empty source folders** left behind after moves are NOT deleted. That's intentionally non-destructive.

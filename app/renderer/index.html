@@ -74,8 +74,9 @@
         <h2>1. Pick a folder</h2>
         <p class="muted">
           Choose any folder on your computer. Foldnize will scan it recursively
-          for <code>.jpeg</code>, <code>.jpg</code>, <code>.mov</code>,
-          <code>.mp3</code>, <code>.mp4</code>, and <code>.png</code> files.
+          for <code>.heic</code>, <code>.jpeg</code>, <code>.jpg</code>,
+          <code>.mov</code>, <code>.mp3</code>, <code>.mp4</code>, and
+          <code>.png</code> files.
         </p>
 
         <div class="folder-row">
@@ -184,6 +185,42 @@
               >
             </span>
           </label>
+        </div>
+
+        <div class="option-group">
+          <span class="option-label">File limit</span>
+          <div class="file-limit-control">
+            <div class="file-limit-input-wrap">
+              <label for="file-limit">Maximum files</label>
+              <input
+                type="number"
+                id="file-limit"
+                class="text-input number-input"
+                value="50"
+                min="1"
+                max="1000"
+                step="1"
+                inputmode="numeric"
+                aria-describedby="file-limit-help file-limit-feedback"
+                aria-invalid="false"
+              />
+            </div>
+            <label class="checkbox checkbox-compact">
+              <input type="checkbox" id="unlimited-files" />
+              <span><strong>No limit</strong></span>
+            </label>
+          </div>
+          <p class="field-help muted" id="file-limit-help">
+            Only the selected number of supported files are counted and
+            processed. Choose 1–1000; the default is 50 and the same limit
+            applies to Dry run.
+          </p>
+          <p
+            id="file-limit-feedback"
+            class="custom-name-feedback"
+            role="alert"
+            hidden
+          ></p>
         </div>
 
         <div class="option-group">

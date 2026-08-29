@@ -1,4 +1,10 @@
-export { organizeFolder, LogLevel } from "./organize";
+export {
+  organizeFolder,
+  LogLevel,
+  DEFAULT_FILE_LIMIT,
+  MAX_FILE_LIMIT,
+  UNLIMITED_FILE_LIMIT,
+} from "./organize";
 export type {
   LogEntry,
   LogFn,

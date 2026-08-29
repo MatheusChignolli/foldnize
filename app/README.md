@@ -16,11 +16,15 @@ This package is a thin UI shell on top of the [`foldnize`](https://www.npmjs.com
   missing ones are created.
 - **Subfolder toggle** — choose whether the scan descends into subfolders or
   only processes top-level files.
+- **File limit** — process and count 50 files by default, choose any limit from
+  1 to 1000, or explicitly opt into an unlimited run.
 - **Dry run** mode to preview changes without touching any file.
 - Real-time streaming log of every action.
+- Responsive background processing: the window remains scrollable while a run
+  is active, with controls disabled until it finishes.
 - Safe collision handling (`-1`, `-2`, … suffixes).
 - Skips already-formatted files automatically.
-- Supported formats: `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
+- Supported formats: `.heic`, `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
 
 ## Requirements
 
@@ -67,6 +71,7 @@ library before installing or building the app from a fresh checkout.
 app/
 ├── main.ts                   # Electron main process (window, IPC, dialog, dock icon)
 ├── preload.ts                # Secure bridge between main and renderer
+├── organize-worker.ts        # Runs synchronous file work off the UI thread
 ├── bridge-types.d.ts         # Shared type contract for window.foldnize
 ├── tsconfig.json             # Compiles main.ts + preload.ts (Node, no DOM)
 ├── tsconfig.renderer.json    # Compiles renderer/*.ts (DOM, no Node)
@@ -149,6 +154,7 @@ organizeFolder({
   customName: "vacation",          // required when mode === "custom"
   organizeIntoYearMonth: true,
   scanSubfolders: true,
+  maxFiles: 50,                  // 1–1000; -1 = unlimited; default = 50
   dryRun: true,
   onLog: ({ level, message }) => console.log(level, message),
 });
