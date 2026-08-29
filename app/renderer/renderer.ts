@@ -66,6 +66,7 @@ interface RendererState {
 
 const selectBtn = document.getElementById("select-folder") as HTMLButtonElement;
 const runBtn = document.getElementById("run") as HTMLButtonElement;
+const cancelBtn = document.getElementById("cancel-run") as HTMLButtonElement;
 const clearBtn = document.getElementById("clear-log") as HTMLButtonElement;
 const appMainEl = document.querySelector(".app-main") as HTMLElement;
 const progressEl = document.getElementById("run-progress") as HTMLElement;
@@ -233,6 +234,32 @@ clearBtn.addEventListener("click", () => {
   hideSummary();
 });
 
+cancelBtn.addEventListener("click", async () => {
+  cancelBtn.disabled = true;
+  cancelBtn.textContent = "Canceling safely…";
+  progressLabelEl.textContent = "Finishing the current file…";
+
+  try {
+    const accepted = await window.foldnize.cancelOrganization();
+    if (!accepted && isRunning) {
+      cancelBtn.disabled = false;
+      cancelBtn.textContent = "Cancel safely";
+    }
+  } catch (error) {
+    appendLog({
+      level: "error" as LogEntry["level"],
+      message:
+        error instanceof Error
+          ? error.message
+          : "The cancellation request could not be sent.",
+    });
+    if (isRunning) {
+      cancelBtn.disabled = false;
+      cancelBtn.textContent = "Cancel safely";
+    }
+  }
+});
+
 function getMode(): Mode {
   const checked = document.querySelector<HTMLInputElement>(
     'input[name="mode"]:checked',
@@ -358,6 +385,9 @@ function setRunning(running: boolean): void {
   document.body.classList.toggle("is-running", running);
   appMainEl.setAttribute("aria-busy", String(running));
   runBtn.disabled = running;
+  cancelBtn.hidden = !running;
+  cancelBtn.disabled = !running;
+  cancelBtn.textContent = "Cancel safely";
   selectBtn.disabled = running;
   clearBtn.disabled = running;
   websiteLinkBtn.disabled = running;
@@ -400,7 +430,11 @@ function updateProgress(progress: OrganizeProgress): void {
   progressCountEl.textContent = `${progress.processed} of ${progress.total}`;
   progressFileEl.textContent = progress.currentFile ?? "";
   progressLabelEl.textContent =
-    progress.phase === "done" ? "Run complete" : "Organizing files…";
+    progress.phase === "done"
+      ? "Run complete"
+      : progress.phase === "cancelled"
+        ? "Run cancelled safely"
+        : "Organizing files…";
 }
 
 function showSummary(summary: OrganizeSummary): void {

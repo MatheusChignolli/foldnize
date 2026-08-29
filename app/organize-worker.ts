@@ -14,6 +14,7 @@ import type { OrganizeResponse } from "./bridge-types";
 export interface OrganizeWorkerInput {
   options: OrganizeOptions;
   metadataTools?: MetadataToolPaths;
+  cancelBuffer: SharedArrayBuffer;
 }
 
 export type OrganizeWorkerMessage =
@@ -27,6 +28,7 @@ if (!port) {
 }
 
 const input = workerData as OrganizeWorkerInput;
+const cancelView = new Int32Array(input.cancelBuffer);
 
 try {
   if (input.metadataTools) {
@@ -44,6 +46,7 @@ try {
         progress,
       } satisfies OrganizeWorkerMessage);
     },
+    shouldCancel: () => Atomics.load(cancelView, 0) === 1,
   });
 
   port.postMessage({

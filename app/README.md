@@ -21,6 +21,8 @@ This package is a thin UI shell on top of the [`foldnize`](https://www.npmjs.com
 - **Dry run** mode to preview changes without touching any file.
 - Real-time streaming log of every action.
 - Live scan and per-file progress with the current item and processed total.
+- Safe cooperative cancellation that waits for the current file operation to
+  finish before stopping the run.
 - Responsive background processing: the window remains scrollable while a run
   is active, with controls disabled until it finishes.
 - Safe collision handling (`-1`, `-2`, … suffixes).

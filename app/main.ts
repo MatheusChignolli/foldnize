@@ -56,6 +56,13 @@ function getBundledMetadataTools(): MetadataToolPaths | undefined {
 
 let mainWindow: BrowserWindow | null = null;
 
+interface ActiveRun {
+  worker: Worker;
+  cancelView: Int32Array;
+}
+
+const activeRuns = new Map<number, ActiveRun>();
+
 const RELEASES_URL =
   "https://api.github.com/repos/MatheusChignolli/foldnize/releases?per_page=20";
 const RELEASE_TAG_PREFIX = "foldnize-app-v";
@@ -236,6 +243,14 @@ ipcMain.handle(
   },
 );
 
+ipcMain.handle("organize:cancel", (event): boolean => {
+  const activeRun = activeRuns.get(event.sender.id);
+  if (!activeRun) return false;
+
+  Atomics.store(activeRun.cancelView, 0, 1);
+  return true;
+});
+
 ipcMain.handle(
   "organize:run",
   async (event, options: OrganizeOptions): Promise<OrganizeResponse> => {
@@ -250,13 +265,29 @@ ipcMain.handle(
       }
     };
 
+    if (activeRuns.has(event.sender.id)) {
+      const message = "An organization run is already active.";
+      sendLog({ level: "error" as LogLevel, message });
+      return { ok: false, error: message };
+    }
+
+    const cancelBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
+    const cancelView = new Int32Array(cancelBuffer);
+
     const workerInput: OrganizeWorkerInput = {
-      options: { ...options, onLog: undefined, onProgress: undefined },
+      options: {
+        ...options,
+        onLog: undefined,
+        onProgress: undefined,
+        shouldCancel: undefined,
+      },
       metadataTools: getBundledMetadataTools(),
+      cancelBuffer,
     };
     const worker = new Worker(path.join(__dirname, "organize-worker.js"), {
       workerData: workerInput,
     });
+    activeRuns.set(event.sender.id, { worker, cancelView });
 
     return new Promise((resolve) => {
       let settled = false;
@@ -264,6 +295,10 @@ ipcMain.handle(
       const finish = (response: OrganizeResponse): void => {
         if (settled) return;
         settled = true;
+        const activeRun = activeRuns.get(event.sender.id);
+        if (activeRun?.worker === worker) {
+          activeRuns.delete(event.sender.id);
+        }
         resolve(response);
       };
 

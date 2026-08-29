@@ -8,6 +8,7 @@ Organize photos and videos by their embedded EXIF/QuickTime **original date**, p
 - Safe **50-file default limit**, configurable from 1–1000 (`-1` for unlimited)
 - Streamed log of every action via callback
 - Structured scan and per-file progress callbacks
+- Cooperative cancellation between files, never mid-move or mid-rename
 - 100% local — no network, no telemetry
 - Written in **TypeScript**, ships compiled JS + `.d.ts` types, **zero runtime dependencies**
 - Powers the [Foldnize desktop app](https://github.com/matheuschignolli/foldnize)
@@ -65,6 +66,7 @@ const summary: OrganizeSummary = organizeFolder({
   onLog: ({ level, message }) => console.log(`[${level}] ${message}`),
   onProgress: ({ phase, processed, total, currentFile }) =>
     console.log(phase, processed, total, currentFile),
+  shouldCancel: () => abortController.signal.aborted,
 });
 
 console.log(summary);
@@ -77,6 +79,7 @@ console.log(summary);
 ```
 
 A file can appear in **both** `renamed` and `moved` counts if it changes name AND directory.
+Cancelled runs also return `cancelled: true` and the completed `processed` count.
 
 ### Modes
 

@@ -379,6 +379,17 @@ body.is-running button:disabled {
   color: var(--text-muted);
 }
 
+.btn-danger {
+  color: var(--danger);
+  background: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.18);
+  border-color: rgba(248, 113, 113, 0.65);
+}
+
 /* Options */
 .option-group {
   margin-bottom: 16px;

@@ -519,6 +519,38 @@ test("organizeFolder — reports structured progress from scan through completio
   ]);
 });
 
+test("organizeFolder — cancellation stops safely between files", () => {
+  writeFile("a.jpg");
+  writeFile("b.jpg");
+  const progress: OrganizeProgress[] = [];
+  let cancellationChecks = 0;
+
+  const summary = withFakeMetadata({ "a.jpg": STAMP, "b.jpg": STAMP }, () =>
+    organizeFolder({
+      root,
+      mode: Mode.PREFIX,
+      onProgress: (entry) => progress.push(entry),
+      shouldCancel: () => cancellationChecks++ >= 1,
+    }),
+  );
+
+  assert.deepEqual(summary, {
+    found: 2,
+    renamed: 1,
+    moved: 0,
+    skipped: 0,
+    cancelled: true,
+    processed: 1,
+  });
+  assert.ok(fs.existsSync(path.join(root, "20230715-a.jpg")));
+  assert.ok(fs.existsSync(path.join(root, "b.jpg")));
+  assert.deepEqual(progress.at(-1), {
+    phase: ProgressPhase.CANCELLED,
+    processed: 1,
+    total: 2,
+  });
+});
+
 test("organizeFolder — empty folder", () => {
   const summary = withFakeMetadata({}, () =>
     organizeFolder({ root, mode: Mode.PREFIX }),

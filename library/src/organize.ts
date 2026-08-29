@@ -34,6 +34,7 @@ export type LogFn = (entry: LogEntry) => void;
 export enum ProgressPhase {
   SCANNING = "scanning",
   PROCESSING = "processing",
+  CANCELLED = "cancelled",
   DONE = "done",
 }
 
@@ -75,6 +76,11 @@ export interface OrganizeOptions {
   onLog?: LogFn;
   /** Structured progress callback, emitted while scanning and after each file. */
   onProgress?: ProgressFn;
+  /**
+   * Cooperative cancellation check, evaluated between files. Returning `true`
+   * stops before the next file so an in-flight filesystem operation completes.
+   */
+  shouldCancel?: () => boolean;
 }
 
 export interface OrganizeSummary {
@@ -82,6 +88,10 @@ export interface OrganizeSummary {
   renamed: number;
   moved: number;
   skipped: number;
+  /** Present when a run stopped early through `shouldCancel`. */
+  cancelled?: true;
+  /** Number of files completed before cancellation. */
+  processed?: number;
 }
 
 interface ProcessResult {
@@ -185,6 +195,7 @@ export function organizeFolder({
   maxFiles = DEFAULT_FILE_LIMIT,
   onLog,
   onProgress,
+  shouldCancel,
 }: OrganizeOptions): OrganizeSummary {
   if (!root) {
     throw new Error("A target folder is required.");
@@ -251,8 +262,15 @@ export function organizeFolder({
   let renamed = 0;
   let moved = 0;
   let skipped = 0;
+  let processed = 0;
+  let cancelled = false;
 
   for (const [index, filePath] of files.entries()) {
+    if (shouldCancel?.()) {
+      cancelled = true;
+      break;
+    }
+
     const result = processFile({
       filePath,
       root,
@@ -265,12 +283,33 @@ export function organizeFolder({
     if (result.renamed) renamed += 1;
     if (result.moved) moved += 1;
     if (result.skipped) skipped += 1;
+    processed = index + 1;
     onProgress?.({
       phase: ProgressPhase.PROCESSING,
       processed: index + 1,
       total: files.length,
       currentFile: path.relative(root, filePath),
     });
+  }
+
+  if (cancelled) {
+    log(
+      LogLevel.DONE,
+      `Cancelled safely after ${processed} of ${files.length} file(s).`,
+    );
+    onProgress?.({
+      phase: ProgressPhase.CANCELLED,
+      processed,
+      total: files.length,
+    });
+    return {
+      found: files.length,
+      renamed,
+      moved,
+      skipped,
+      cancelled: true,
+      processed,
+    };
   }
 
   log(

@@ -21,6 +21,9 @@ const bridge: FoldnizeBridge = {
   organize: (options: OrganizeOptions): Promise<OrganizeResponse> =>
     ipcRenderer.invoke("organize:run", options),
 
+  cancelOrganization: (): Promise<boolean> =>
+    ipcRenderer.invoke("organize:cancel"),
+
   sanitizeCustomName: (raw: string): string => sanitizeCustomName(raw),
 
   openExternal: (url: string): Promise<void> =>
