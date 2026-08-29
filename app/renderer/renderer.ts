@@ -64,6 +64,20 @@ interface RendererState {
   folderPath: string | null;
 }
 
+interface PersistedSettings {
+  version: 1;
+  folderPath: string | null;
+  mode: Mode;
+  customName: string;
+  organizeIntoYearMonth: boolean;
+  scanSubfolders: boolean;
+  dryRun: boolean;
+  maxFiles: number;
+  unlimitedFiles: boolean;
+}
+
+const SETTINGS_STORAGE_KEY = "foldnize:desktop-settings:v1";
+
 const selectBtn = document.getElementById("select-folder") as HTMLButtonElement;
 const runBtn = document.getElementById("run") as HTMLButtonElement;
 const cancelBtn = document.getElementById("cancel-run") as HTMLButtonElement;
@@ -141,6 +155,7 @@ selectBtn.addEventListener("click", async () => {
     folderPathEl.textContent = result.path;
     folderPathEl.classList.remove("muted");
     folderCountEl.textContent = `${result.entryCount} item(s) at top level`;
+    persistSettings();
     refreshRunButton();
   } catch (error) {
     appendLog({
@@ -153,38 +168,48 @@ selectBtn.addEventListener("click", async () => {
   }
 });
 
-function updateCustomNameRow(): void {
+function updateCustomNameRow(focusInput = true): void {
   const isCustom = getMode() === MODE.CUSTOM;
   customRow.hidden = !isCustom;
   if (isCustom) {
-    customInput.focus();
+    if (focusInput) customInput.focus();
     refreshCustomNameFeedback();
   }
   refreshRunButton();
 }
 
 modeInputs.forEach((input) => {
-  input.addEventListener("change", updateCustomNameRow);
+  input.addEventListener("change", () => {
+    updateCustomNameRow();
+    persistSettings();
+  });
 });
 
 dryRunEl.addEventListener("change", () => {
   refreshDryRunWarning();
+  persistSettings();
 });
 
 customInput.addEventListener("input", () => {
   refreshCustomNameFeedback();
   refreshRunButton();
+  persistSettings();
 });
+
+organizeYearMonthEl.addEventListener("change", persistSettings);
+scanSubfoldersEl.addEventListener("change", persistSettings);
 
 fileLimitEl.addEventListener("input", () => {
   refreshFileLimitFeedback();
   refreshRunButton();
+  persistSettings();
 });
 
 unlimitedFilesEl.addEventListener("change", () => {
   fileLimitEl.disabled = unlimitedFilesEl.checked;
   refreshFileLimitFeedback();
   refreshRunButton();
+  persistSettings();
 });
 
 runBtn.addEventListener("click", async () => {
@@ -267,6 +292,87 @@ function getMode(): Mode {
   const value = checked?.value;
   if (value === "replace" || value === "custom") return value as Mode;
   return MODE.PREFIX;
+}
+
+function persistSettings(): void {
+  const maxFiles = fileLimitEl.valueAsNumber;
+  const settings: PersistedSettings = {
+    version: 1,
+    folderPath: state.folderPath,
+    mode: getMode(),
+    customName: customInput.value,
+    organizeIntoYearMonth: organizeYearMonthEl.checked,
+    scanSubfolders: scanSubfoldersEl.checked,
+    dryRun: dryRunEl.checked,
+    maxFiles:
+      Number.isInteger(maxFiles) && maxFiles >= 1 && maxFiles <= 1000
+        ? maxFiles
+        : 50,
+    unlimitedFiles: unlimitedFilesEl.checked,
+  };
+
+  try {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  } catch {
+    // Persistence is a convenience; storage failures must never block a run.
+  }
+}
+
+function restoreSettings(): void {
+  let saved: Partial<PersistedSettings> | null = null;
+  try {
+    const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (!raw) return;
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return;
+    saved = parsed as Partial<PersistedSettings>;
+  } catch {
+    return;
+  }
+
+  if (saved.version !== 1) return;
+
+  if (typeof saved.folderPath === "string" && saved.folderPath.trim()) {
+    state.folderPath = saved.folderPath;
+    folderPathEl.textContent = saved.folderPath;
+    folderPathEl.classList.remove("muted");
+    folderCountEl.textContent = "Restored from the previous session";
+  }
+
+  if (
+    saved.mode === MODE.PREFIX ||
+    saved.mode === MODE.REPLACE ||
+    saved.mode === MODE.CUSTOM
+  ) {
+    const input = document.querySelector<HTMLInputElement>(
+      `input[name="mode"][value="${saved.mode}"]`,
+    );
+    if (input) input.checked = true;
+  }
+
+  if (typeof saved.customName === "string") {
+    customInput.value = saved.customName.slice(0, 60);
+  }
+  if (typeof saved.organizeIntoYearMonth === "boolean") {
+    organizeYearMonthEl.checked = saved.organizeIntoYearMonth;
+  }
+  if (typeof saved.scanSubfolders === "boolean") {
+    scanSubfoldersEl.checked = saved.scanSubfolders;
+  }
+  if (typeof saved.dryRun === "boolean") {
+    dryRunEl.checked = saved.dryRun;
+  }
+  if (
+    Number.isInteger(saved.maxFiles) &&
+    Number(saved.maxFiles) >= 1 &&
+    Number(saved.maxFiles) <= 1000
+  ) {
+    fileLimitEl.value = String(saved.maxFiles);
+  }
+  if (typeof saved.unlimitedFiles === "boolean") {
+    unlimitedFilesEl.checked = saved.unlimitedFiles;
+  }
+  fileLimitEl.disabled = unlimitedFilesEl.checked;
 }
 
 function getSanitizedCustomName(raw: string): string {
@@ -356,7 +462,12 @@ function refreshDryRunWarning(): void {
   dryRunWarning.hidden = dryRunEl.checked;
 }
 
+restoreSettings();
+updateCustomNameRow(false);
+refreshCustomNameFeedback();
+refreshFileLimitFeedback();
 refreshDryRunWarning();
+refreshRunButton();
 
 function appendLog(entry: LogEntry): void {
   const wasNearBottom =

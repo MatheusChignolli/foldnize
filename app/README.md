@@ -23,6 +23,8 @@ This package is a thin UI shell on top of the [`foldnize`](https://www.npmjs.com
 - Live scan and per-file progress with the current item and processed total.
 - Safe cooperative cancellation that waits for the current file operation to
   finish before stopping the run.
+- Local persistence for the last folder and organization options, restored on
+  the next launch with validated fallbacks.
 - Responsive background processing: the window remains scrollable while a run
   is active, with controls disabled until it finishes.
 - Safe collision handling (`-1`, `-2`, … suffixes).
