@@ -7,6 +7,7 @@ Organize photos and videos by their embedded EXIF/QuickTime **original date**, p
 - **Dry-run** preview before touching disk
 - Safe **50-file default limit**, configurable from 1–1000 (`-1` for unlimited)
 - Streamed log of every action via callback
+- Structured scan and per-file progress callbacks
 - 100% local — no network, no telemetry
 - Written in **TypeScript**, ships compiled JS + `.d.ts` types, **zero runtime dependencies**
 - Powers the [Foldnize desktop app](https://github.com/matheuschignolli/foldnize)
@@ -62,6 +63,8 @@ const summary: OrganizeSummary = organizeFolder({
   maxFiles: 50, // default; use 1–1000 or -1 for unlimited
   dryRun: true, // preview only — no disk writes
   onLog: ({ level, message }) => console.log(`[${level}] ${message}`),
+  onProgress: ({ phase, processed, total, currentFile }) =>
+    console.log(phase, processed, total, currentFile),
 });
 
 console.log(summary);
@@ -114,6 +117,7 @@ import {
   type Mode,
   type LogEntry,
   type LogLevel,
+  type OrganizeProgress,
   type OrganizeOptions,
   type OrganizeSummary,
 } from "foldnize";

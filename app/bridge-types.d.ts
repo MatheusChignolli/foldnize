@@ -1,6 +1,7 @@
 import type {
   LogEntry,
   OrganizeOptions,
+  OrganizeProgress,
   OrganizeSummary,
 } from "foldnize";
 
@@ -28,4 +29,5 @@ export interface FoldnizeBridge {
   sanitizeCustomName: (raw: string) => string;
   openExternal: (url: string) => Promise<void>;
   onLog: (callback: (entry: LogEntry) => void) => () => void;
+  onProgress: (callback: (progress: OrganizeProgress) => void) => () => void;
 }

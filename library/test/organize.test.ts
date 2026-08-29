@@ -3,8 +3,16 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { organizeFolder, LogLevel } from "../src/organize";
-import type { LogEntry, OrganizeSummary } from "../src/organize";
+import {
+  organizeFolder,
+  LogLevel,
+  ProgressPhase,
+} from "../src/organize";
+import type {
+  LogEntry,
+  OrganizeProgress,
+  OrganizeSummary,
+} from "../src/organize";
 import { Mode, type DateParts } from "../src/naming";
 import {
   __setDateReaderForTests,
@@ -476,6 +484,39 @@ test("organizeFolder — dry-run logs use DRY level", () => {
       (e) => e.level === LogLevel.DRY && e.message.includes("[DRY]"),
     ),
   );
+});
+
+test("organizeFolder — reports structured progress from scan through completion", () => {
+  writeFile("a.jpg");
+  writeFile("b.jpg");
+  const progress: OrganizeProgress[] = [];
+
+  withFakeMetadata({ "a.jpg": STAMP, "b.jpg": STAMP }, () =>
+    organizeFolder({
+      root,
+      mode: Mode.PREFIX,
+      dryRun: true,
+      onProgress: (entry) => progress.push(entry),
+    }),
+  );
+
+  assert.deepEqual(progress, [
+    { phase: ProgressPhase.SCANNING, processed: 0, total: 0 },
+    { phase: ProgressPhase.PROCESSING, processed: 0, total: 2 },
+    {
+      phase: ProgressPhase.PROCESSING,
+      processed: 1,
+      total: 2,
+      currentFile: "a.jpg",
+    },
+    {
+      phase: ProgressPhase.PROCESSING,
+      processed: 2,
+      total: 2,
+      currentFile: "b.jpg",
+    },
+    { phase: ProgressPhase.DONE, processed: 2, total: 2 },
+  ]);
 });
 
 test("organizeFolder — empty folder", () => {

@@ -7,7 +7,7 @@ import type {
   UpdateInfo,
 } from "./bridge-types";
 import { sanitizeCustomName } from "foldnize";
-import type { LogEntry, OrganizeOptions } from "foldnize";
+import type { LogEntry, OrganizeOptions, OrganizeProgress } from "foldnize";
 
 const bridge: FoldnizeBridge = {
   platform: process.platform,
@@ -33,6 +33,21 @@ const bridge: FoldnizeBridge = {
     ipcRenderer.on("organize:log", listener);
     return () => {
       ipcRenderer.removeListener("organize:log", listener);
+    };
+  },
+
+  onProgress: (
+    callback: (progress: OrganizeProgress) => void,
+  ): (() => void) => {
+    const listener = (
+      _event: IpcRendererEvent,
+      progress: OrganizeProgress,
+    ): void => {
+      callback(progress);
+    };
+    ipcRenderer.on("organize:progress", listener);
+    return () => {
+      ipcRenderer.removeListener("organize:progress", listener);
     };
   },
 };

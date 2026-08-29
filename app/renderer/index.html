@@ -264,6 +264,15 @@
           </button>
         </div>
 
+        <div class="run-progress" id="run-progress" aria-live="polite" hidden>
+          <div class="run-progress-header">
+            <strong id="progress-label">Preparing…</strong>
+            <span id="progress-count" class="muted"></span>
+          </div>
+          <progress id="progress-bar" max="1"></progress>
+          <span id="progress-file" class="progress-file muted"></span>
+        </div>
+
         <div class="summary" id="summary" hidden>
           <div>
             <span class="summary-label">Found</span

@@ -6,6 +6,7 @@ import {
   type LogEntry,
   type MetadataToolPaths,
   type OrganizeOptions,
+  type OrganizeProgress,
 } from "foldnize";
 
 import type { OrganizeResponse } from "./bridge-types";
@@ -17,6 +18,7 @@ export interface OrganizeWorkerInput {
 
 export type OrganizeWorkerMessage =
   | { type: "log"; entry: LogEntry }
+  | { type: "progress"; progress: OrganizeProgress }
   | { type: "result"; response: OrganizeResponse };
 
 const port = parentPort;
@@ -35,6 +37,12 @@ try {
     ...input.options,
     onLog: (entry) => {
       port.postMessage({ type: "log", entry } satisfies OrganizeWorkerMessage);
+    },
+    onProgress: (progress) => {
+      port.postMessage({
+        type: "progress",
+        progress,
+      } satisfies OrganizeWorkerMessage);
     },
   });
 

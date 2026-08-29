@@ -1,5 +1,10 @@
 /// <reference path="../window.d.ts" />
-import type { LogEntry, Mode, OrganizeSummary } from "foldnize";
+import type {
+  LogEntry,
+  Mode,
+  OrganizeProgress,
+  OrganizeSummary,
+} from "foldnize";
 
 /** Runtime mode strings — cannot import `Mode` from foldnize in the renderer (no bundler). */
 const MODE = {
@@ -63,6 +68,19 @@ const selectBtn = document.getElementById("select-folder") as HTMLButtonElement;
 const runBtn = document.getElementById("run") as HTMLButtonElement;
 const clearBtn = document.getElementById("clear-log") as HTMLButtonElement;
 const appMainEl = document.querySelector(".app-main") as HTMLElement;
+const progressEl = document.getElementById("run-progress") as HTMLElement;
+const progressBarEl = document.getElementById(
+  "progress-bar",
+) as HTMLProgressElement;
+const progressLabelEl = document.getElementById(
+  "progress-label",
+) as HTMLElement;
+const progressCountEl = document.getElementById(
+  "progress-count",
+) as HTMLElement;
+const progressFileEl = document.getElementById(
+  "progress-file",
+) as HTMLElement;
 const folderPathEl = document.getElementById("folder-path") as HTMLElement;
 const folderCountEl = document.getElementById("folder-count") as HTMLElement;
 const dryRunEl = document.getElementById("dry-run") as HTMLInputElement;
@@ -107,6 +125,10 @@ if (!window.foldnize) {
 
 window.foldnize.onLog((entry: LogEntry) => {
   appendLog(entry);
+});
+
+window.foldnize.onProgress((progress: OrganizeProgress) => {
+  updateProgress(progress);
 });
 
 selectBtn.addEventListener("click", async () => {
@@ -176,6 +198,7 @@ runBtn.addEventListener("click", async () => {
 
   clearLog();
   hideSummary();
+  resetProgress();
   setRunning(true);
 
   try {
@@ -350,6 +373,34 @@ function setRunning(running: boolean): void {
   });
   runBtn.textContent = running ? "Organizing…" : "Organize folder";
   if (!running) refreshRunButton();
+}
+
+function resetProgress(): void {
+  progressEl.hidden = false;
+  progressBarEl.removeAttribute("value");
+  progressBarEl.max = 1;
+  progressLabelEl.textContent = "Scanning supported files…";
+  progressCountEl.textContent = "";
+  progressFileEl.textContent = "";
+}
+
+function updateProgress(progress: OrganizeProgress): void {
+  progressEl.hidden = false;
+
+  if (progress.phase === "scanning") {
+    progressBarEl.removeAttribute("value");
+    progressLabelEl.textContent = "Scanning supported files…";
+    progressCountEl.textContent = "";
+    progressFileEl.textContent = "";
+    return;
+  }
+
+  progressBarEl.max = Math.max(progress.total, 1);
+  progressBarEl.value = progress.processed;
+  progressCountEl.textContent = `${progress.processed} of ${progress.total}`;
+  progressFileEl.textContent = progress.currentFile ?? "";
+  progressLabelEl.textContent =
+    progress.phase === "done" ? "Run complete" : "Organizing files…";
 }
 
 function showSummary(summary: OrganizeSummary): void {

@@ -31,6 +31,22 @@ export interface LogEntry {
 
 export type LogFn = (entry: LogEntry) => void;
 
+export enum ProgressPhase {
+  SCANNING = "scanning",
+  PROCESSING = "processing",
+  DONE = "done",
+}
+
+export interface OrganizeProgress {
+  phase: ProgressPhase;
+  processed: number;
+  total: number;
+  /** Path relative to `root` for the file currently being processed. */
+  currentFile?: string;
+}
+
+export type ProgressFn = (progress: OrganizeProgress) => void;
+
 export interface OrganizeOptions {
   /** Absolute path to the folder to scan. */
   root: string;
@@ -57,6 +73,8 @@ export interface OrganizeOptions {
   maxFiles?: number;
   /** Streamed log callback. */
   onLog?: LogFn;
+  /** Structured progress callback, emitted while scanning and after each file. */
+  onProgress?: ProgressFn;
 }
 
 export interface OrganizeSummary {
@@ -166,6 +184,7 @@ export function organizeFolder({
   scanSubfolders = true,
   maxFiles = DEFAULT_FILE_LIMIT,
   onLog,
+  onProgress,
 }: OrganizeOptions): OrganizeSummary {
   if (!root) {
     throw new Error("A target folder is required.");
@@ -215,14 +234,25 @@ export function organizeFolder({
   );
   log(LogLevel.INFO, `Dry run: ${dryRun ? "yes" : "no"}`);
 
+  onProgress?.({
+    phase: ProgressPhase.SCANNING,
+    processed: 0,
+    total: 0,
+  });
+
   const files = walk(root, scanSubfolders, maxFiles);
   log(LogLevel.INFO, `Found ${files.length} supported file(s).`);
+  onProgress?.({
+    phase: ProgressPhase.PROCESSING,
+    processed: 0,
+    total: files.length,
+  });
 
   let renamed = 0;
   let moved = 0;
   let skipped = 0;
 
-  for (const filePath of files) {
+  for (const [index, filePath] of files.entries()) {
     const result = processFile({
       filePath,
       root,
@@ -235,12 +265,23 @@ export function organizeFolder({
     if (result.renamed) renamed += 1;
     if (result.moved) moved += 1;
     if (result.skipped) skipped += 1;
+    onProgress?.({
+      phase: ProgressPhase.PROCESSING,
+      processed: index + 1,
+      total: files.length,
+      currentFile: path.relative(root, filePath),
+    });
   }
 
   log(
     LogLevel.DONE,
     `Done. Renamed: ${renamed} · Moved: ${moved} · Skipped: ${skipped}`,
   );
+  onProgress?.({
+    phase: ProgressPhase.DONE,
+    processed: files.length,
+    total: files.length,
+  });
 
   return { found: files.length, renamed, moved, skipped };
 }

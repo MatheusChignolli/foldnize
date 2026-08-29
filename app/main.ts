@@ -24,6 +24,7 @@ import type {
   LogLevel,
   MetadataToolPaths,
   OrganizeOptions,
+  OrganizeProgress,
 } from "foldnize";
 
 // macOS shows "Electron" in the Dock tooltip unless the app name is set
@@ -243,9 +244,14 @@ ipcMain.handle(
         event.sender.send("organize:log", entry);
       }
     };
+    const sendProgress = (progress: OrganizeProgress): void => {
+      if (!event.sender.isDestroyed()) {
+        event.sender.send("organize:progress", progress);
+      }
+    };
 
     const workerInput: OrganizeWorkerInput = {
-      options: { ...options, onLog: undefined },
+      options: { ...options, onLog: undefined, onProgress: undefined },
       metadataTools: getBundledMetadataTools(),
     };
     const worker = new Worker(path.join(__dirname, "organize-worker.js"), {
@@ -269,6 +275,10 @@ ipcMain.handle(
       worker.on("message", (message: OrganizeWorkerMessage) => {
         if (message.type === "log") {
           sendLog(message.entry);
+          return;
+        }
+        if (message.type === "progress") {
+          sendProgress(message.progress);
           return;
         }
 
