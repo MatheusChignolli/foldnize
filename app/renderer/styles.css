@@ -593,6 +593,34 @@ body.is-running button:disabled {
   font-size: 11px;
 }
 
+.select-input {
+  appearance: auto;
+  max-width: 330px;
+  font-family: inherit;
+}
+
+.custom-extension-row {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+  padding: 12px;
+  background: var(--accent-soft);
+  border: 1px dashed rgba(108, 140, 255, 0.45);
+  border-radius: var(--radius-sm);
+}
+
+.custom-extension-row[hidden] {
+  display: none;
+}
+
+.custom-extension-row label {
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .file-limit-control + .field-help + .custom-name-feedback {
   margin-top: 6px;
 }

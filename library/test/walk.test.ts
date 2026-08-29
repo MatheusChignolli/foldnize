@@ -118,6 +118,15 @@ test("walk — stops after the requested number of supported files", () => {
   );
 });
 
+test("walk — accepts a caller-provided extension set", () => {
+  write("animation.gif");
+
+  assert.deepEqual(
+    walk(root, true, -1, new Set([".gif"])).map((file) => path.basename(file)),
+    ["animation.gif"],
+  );
+});
+
 test("walk — empty directory returns no files", () => {
   const empty = fs.mkdtempSync(path.join(os.tmpdir(), "foldnize-walk-empty-"));
   try {

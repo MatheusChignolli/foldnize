@@ -18,6 +18,8 @@ This package is a thin UI shell on top of the [`foldnize`](https://www.npmjs.com
   only processes top-level files.
 - **File limit** — process and count 50 files by default, choose any limit from
   1 to 1000, or explicitly opt into an unlimited run.
+- **File-type filters** — use the defaults, only comma-separated custom
+  extensions, or the defaults plus custom extensions.
 - **Dry run** mode to preview changes without touching any file.
 - Real-time streaming log of every action.
 - Live scan and per-file progress with the current item and processed total.
@@ -161,6 +163,10 @@ organizeFolder({
   organizeIntoYearMonth: true,
   scanSubfolders: true,
   maxFiles: 50,                  // 1–1000; -1 = unlimited; default = 50
+  extensionFilter: {
+    mode: "extend",             // "default" | "only" | "extend"
+    extensions: ["raw", "gif"],
+  },
   dryRun: true,
   onLog: ({ level, message }) => console.log(level, message),
 });

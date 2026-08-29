@@ -1,5 +1,7 @@
 /// <reference path="../window.d.ts" />
 import type {
+  ExtensionFilterMode,
+  ExtensionFilterOptions,
   LogEntry,
   Mode,
   OrganizeProgress,
@@ -11,6 +13,12 @@ const MODE = {
   PREFIX: "prefix" as Mode,
   REPLACE: "replace" as Mode,
   CUSTOM: "custom" as Mode,
+};
+
+const EXTENSION_FILTER_MODE = {
+  DEFAULT: "default" as ExtensionFilterMode,
+  ONLY: "only" as ExtensionFilterMode,
+  EXTEND: "extend" as ExtensionFilterMode,
 };
 
 // Platform hint for CSS (macOS traffic-light padding). Must run in a module
@@ -74,6 +82,8 @@ interface PersistedSettings {
   dryRun: boolean;
   maxFiles: number;
   unlimitedFiles: boolean;
+  extensionMode: ExtensionFilterMode;
+  customExtensions: string;
 }
 
 const SETTINGS_STORAGE_KEY = "foldnize:desktop-settings:v1";
@@ -129,6 +139,18 @@ const unlimitedFilesEl = document.getElementById(
 const fileLimitFeedback = document.getElementById(
   "file-limit-feedback",
 ) as HTMLParagraphElement;
+const extensionModeEl = document.getElementById(
+  "extension-mode",
+) as HTMLSelectElement;
+const customExtensionRow = document.getElementById(
+  "custom-extension-row",
+) as HTMLElement;
+const customExtensionsEl = document.getElementById(
+  "custom-extensions",
+) as HTMLInputElement;
+const extensionFeedbackEl = document.getElementById(
+  "extension-feedback",
+) as HTMLParagraphElement;
 const confirmDialog = document.getElementById(
   "confirm-real-run",
 ) as HTMLDialogElement;
@@ -137,6 +159,9 @@ const confirmFolderEl = document.getElementById(
 ) as HTMLElement;
 const confirmModeEl = document.getElementById("confirm-mode") as HTMLElement;
 const confirmLimitEl = document.getElementById("confirm-limit") as HTMLElement;
+const confirmExtensionsEl = document.getElementById(
+  "confirm-extensions",
+) as HTMLElement;
 const confirmYearMonthEl = document.getElementById(
   "confirm-year-month",
 ) as HTMLElement;
@@ -210,6 +235,18 @@ customInput.addEventListener("input", () => {
 organizeYearMonthEl.addEventListener("change", persistSettings);
 scanSubfoldersEl.addEventListener("change", persistSettings);
 
+extensionModeEl.addEventListener("change", () => {
+  refreshExtensionFilter();
+  refreshRunButton();
+  persistSettings();
+});
+
+customExtensionsEl.addEventListener("input", () => {
+  refreshExtensionFilter();
+  refreshRunButton();
+  persistSettings();
+});
+
 fileLimitEl.addEventListener("input", () => {
   refreshFileLimitFeedback();
   refreshRunButton();
@@ -232,6 +269,7 @@ runBtn.addEventListener("click", async () => {
   const organizeIntoYearMonth = organizeYearMonthEl.checked;
   const scanSubfolders = scanSubfoldersEl.checked;
   const maxFiles = unlimitedFilesEl.checked ? -1 : fileLimitEl.valueAsNumber;
+  const extensionFilter = getExtensionFilter();
 
   if (
     !dryRun &&
@@ -239,6 +277,7 @@ runBtn.addEventListener("click", async () => {
       folderPath: state.folderPath,
       mode,
       maxFiles,
+      extensionDescription: describeExtensionFilter(extensionFilter),
       organizeIntoYearMonth,
     }))
   ) {
@@ -259,6 +298,7 @@ runBtn.addEventListener("click", async () => {
       organizeIntoYearMonth,
       scanSubfolders,
       maxFiles,
+      extensionFilter,
     });
 
     if (response.ok) {
@@ -317,10 +357,73 @@ function getMode(): Mode {
   return MODE.PREFIX;
 }
 
+function getExtensionMode(): ExtensionFilterMode {
+  const value = extensionModeEl.value;
+  if (value === EXTENSION_FILTER_MODE.ONLY) {
+    return EXTENSION_FILTER_MODE.ONLY;
+  }
+  if (value === EXTENSION_FILTER_MODE.EXTEND) {
+    return EXTENSION_FILTER_MODE.EXTEND;
+  }
+  return EXTENSION_FILTER_MODE.DEFAULT;
+}
+
+function getExtensionFilter(): ExtensionFilterOptions {
+  const mode = getExtensionMode();
+  return mode === EXTENSION_FILTER_MODE.DEFAULT
+    ? { mode }
+    : {
+        mode,
+        extensions: window.foldnize.parseExtensionList(
+          customExtensionsEl.value,
+        ),
+      };
+}
+
+function getExtensionFilterError(): string | null {
+  if (getExtensionMode() === EXTENSION_FILTER_MODE.DEFAULT) return null;
+
+  try {
+    const extensions = window.foldnize.parseExtensionList(
+      customExtensionsEl.value,
+    );
+    return extensions.length > 0
+      ? null
+      : "Enter at least one custom extension, separated by commas.";
+  } catch (error) {
+    return error instanceof Error
+      ? error.message
+      : "Enter valid extensions such as raw, .gif, or webp.";
+  }
+}
+
+function refreshExtensionFilter(): void {
+  const usesCustom = getExtensionMode() !== EXTENSION_FILTER_MODE.DEFAULT;
+  customExtensionRow.hidden = !usesCustom;
+  const error = getExtensionFilterError();
+  const invalid = error !== null;
+  customExtensionsEl.classList.toggle("invalid", invalid);
+  customExtensionsEl.setAttribute("aria-invalid", String(invalid));
+  extensionFeedbackEl.hidden = !invalid;
+  extensionFeedbackEl.textContent = error ?? "";
+}
+
+function describeExtensionFilter(filter: ExtensionFilterOptions): string {
+  if (filter.mode === EXTENSION_FILTER_MODE.DEFAULT) {
+    return "Default formats";
+  }
+
+  const extensions = filter.extensions?.join(", ") ?? "";
+  return filter.mode === EXTENSION_FILTER_MODE.ONLY
+    ? `Only ${extensions}`
+    : `Defaults + ${extensions}`;
+}
+
 interface RealRunConfirmation {
   folderPath: string;
   mode: Mode;
   maxFiles: number;
+  extensionDescription: string;
   organizeIntoYearMonth: boolean;
 }
 
@@ -334,6 +437,7 @@ function confirmRealRun(details: RealRunConfirmation): Promise<boolean> {
         : "Prefix";
   confirmLimitEl.textContent =
     details.maxFiles === -1 ? "Unlimited" : String(details.maxFiles);
+  confirmExtensionsEl.textContent = details.extensionDescription;
   confirmYearMonthEl.textContent = details.organizeIntoYearMonth ? "Yes" : "No";
   confirmDialog.returnValue = "cancel";
   confirmDialog.showModal();
@@ -362,6 +466,8 @@ function persistSettings(): void {
         ? maxFiles
         : 50,
     unlimitedFiles: unlimitedFilesEl.checked,
+    extensionMode: getExtensionMode(),
+    customExtensions: customExtensionsEl.value,
   };
 
   try {
@@ -425,6 +531,16 @@ function restoreSettings(): void {
   if (typeof saved.unlimitedFiles === "boolean") {
     unlimitedFilesEl.checked = saved.unlimitedFiles;
   }
+  if (
+    saved.extensionMode === EXTENSION_FILTER_MODE.DEFAULT ||
+    saved.extensionMode === EXTENSION_FILTER_MODE.ONLY ||
+    saved.extensionMode === EXTENSION_FILTER_MODE.EXTEND
+  ) {
+    extensionModeEl.value = saved.extensionMode;
+  }
+  if (typeof saved.customExtensions === "string") {
+    customExtensionsEl.value = saved.customExtensions.slice(0, 500);
+  }
   fileLimitEl.disabled = unlimitedFilesEl.checked;
 }
 
@@ -487,8 +603,9 @@ function refreshRunButton(): void {
     mode !== MODE.CUSTOM ||
     getSanitizedCustomName(customInput.value).length > 0;
   const fileLimitOk = getFileLimitError() === null;
+  const extensionFilterOk = getExtensionFilterError() === null;
 
-  runBtn.disabled = !(hasFolder && customOk && fileLimitOk);
+  runBtn.disabled = !(hasFolder && customOk && fileLimitOk && extensionFilterOk);
 }
 
 function getFileLimitError(): string | null {
@@ -519,6 +636,7 @@ restoreSettings();
 updateCustomNameRow(false);
 refreshCustomNameFeedback();
 refreshFileLimitFeedback();
+refreshExtensionFilter();
 refreshDryRunWarning();
 refreshRunButton();
 
@@ -560,6 +678,8 @@ function setRunning(running: boolean): void {
   dryRunEl.disabled = running;
   organizeYearMonthEl.disabled = running;
   scanSubfoldersEl.disabled = running;
+  extensionModeEl.disabled = running;
+  customExtensionsEl.disabled = running;
   fileLimitEl.disabled = running || unlimitedFilesEl.checked;
   unlimitedFilesEl.disabled = running;
   modeInputs.forEach((input) => {

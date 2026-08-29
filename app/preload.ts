@@ -6,7 +6,7 @@ import type {
   OrganizeResponse,
   UpdateInfo,
 } from "./bridge-types";
-import { sanitizeCustomName } from "foldnize";
+import { parseExtensionList, sanitizeCustomName } from "foldnize";
 import type { LogEntry, OrganizeOptions, OrganizeProgress } from "foldnize";
 
 const bridge: FoldnizeBridge = {
@@ -25,6 +25,8 @@ const bridge: FoldnizeBridge = {
     ipcRenderer.invoke("organize:cancel"),
 
   sanitizeCustomName: (raw: string): string => sanitizeCustomName(raw),
+
+  parseExtensionList: (raw: string): string[] => parseExtensionList(raw),
 
   openExternal: (url: string): Promise<void> =>
     ipcRenderer.invoke("shell:openExternal", url),

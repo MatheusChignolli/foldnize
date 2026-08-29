@@ -40,6 +40,7 @@ When developing the library in this repo, temporarily use `file:../library` or `
 - Node.js **22+**
 - macOS, Linux, or Windows
 - Supported formats: `.heic`, `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
+- Custom extension filters can replace or extend the default format set.
 - Optional but recommended:
   - `exiftool` — `brew install exiftool` — photos, audio, and most video metadata
   - `ffprobe` — `brew install ffmpeg` — fallback for `.mp4` and `.mov` video files

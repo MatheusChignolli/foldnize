@@ -9,6 +9,10 @@ import {
   ensureUniquePath,
   Mode,
 } from "./naming";
+import {
+  resolveExtensionFilter,
+  type ExtensionFilterOptions,
+} from "./extensions";
 
 export const DEFAULT_FILE_LIMIT = 50;
 export const MAX_FILE_LIMIT = 1000;
@@ -72,6 +76,8 @@ export interface OrganizeOptions {
    * Use `-1` for no limit; finite limits must be integers from `1` to `1000`.
    */
   maxFiles?: number;
+  /** Select default formats, custom formats only, or defaults plus custom. */
+  extensionFilter?: ExtensionFilterOptions;
   /** Streamed log callback. */
   onLog?: LogFn;
   /** Structured progress callback, emitted while scanning and after each file. */
@@ -193,6 +199,7 @@ export function organizeFolder({
   organizeIntoYearMonth = false,
   scanSubfolders = true,
   maxFiles = DEFAULT_FILE_LIMIT,
+  extensionFilter,
   onLog,
   onProgress,
   shouldCancel,
@@ -245,13 +252,19 @@ export function organizeFolder({
   );
   log(LogLevel.INFO, `Dry run: ${dryRun ? "yes" : "no"}`);
 
+  const validExtensions = resolveExtensionFilter(extensionFilter);
+  log(
+    LogLevel.INFO,
+    `Extensions: ${[...validExtensions].sort().join(", ")}`,
+  );
+
   onProgress?.({
     phase: ProgressPhase.SCANNING,
     processed: 0,
     total: 0,
   });
 
-  const files = walk(root, scanSubfolders, maxFiles);
+  const files = walk(root, scanSubfolders, maxFiles, validExtensions);
   log(LogLevel.INFO, `Found ${files.length} supported file(s).`);
   onProgress?.({
     phase: ProgressPhase.PROCESSING,

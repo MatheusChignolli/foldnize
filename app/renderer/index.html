@@ -188,6 +188,39 @@
         </div>
 
         <div class="option-group">
+          <label for="extension-mode" class="option-label">File types</label>
+          <select id="extension-mode" class="text-input select-input">
+            <option value="default">Default formats</option>
+            <option value="only">Only custom extensions</option>
+            <option value="extend">Default formats + custom extensions</option>
+          </select>
+          <div class="custom-extension-row" id="custom-extension-row" hidden>
+            <label for="custom-extensions">Custom extensions</label>
+            <input
+              type="text"
+              id="custom-extensions"
+              class="text-input"
+              placeholder="raw, gif, webp"
+              autocomplete="off"
+              spellcheck="false"
+              maxlength="500"
+              aria-describedby="extension-help extension-feedback"
+              aria-invalid="false"
+            />
+          </div>
+          <p class="field-help muted" id="extension-help">
+            Defaults: .heic, .jpeg, .jpg, .mov, .mp3, .mp4, and .png. Custom
+            values are comma-separated and may include the leading dot.
+          </p>
+          <p
+            id="extension-feedback"
+            class="custom-name-feedback"
+            role="alert"
+            hidden
+          ></p>
+        </div>
+
+        <div class="option-group">
           <span class="option-label">File limit</span>
           <div class="file-limit-control">
             <div class="file-limit-input-wrap">
@@ -330,6 +363,10 @@
           <div>
             <dt>Maximum files</dt>
             <dd id="confirm-limit"></dd>
+          </div>
+          <div>
+            <dt>File types</dt>
+            <dd id="confirm-extensions"></dd>
           </div>
           <div>
             <dt>Year/Month folders</dt>

@@ -28,6 +28,7 @@ export interface FoldnizeBridge {
   organize: (options: OrganizeOptions) => Promise<OrganizeResponse>;
   cancelOrganization: () => Promise<boolean>;
   sanitizeCustomName: (raw: string) => string;
+  parseExtensionList: (raw: string) => string[];
   openExternal: (url: string) => Promise<void>;
   onLog: (callback: (entry: LogEntry) => void) => () => void;
   onProgress: (callback: (progress: OrganizeProgress) => void) => () => void;

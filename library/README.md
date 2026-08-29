@@ -28,7 +28,8 @@ brew install exiftool       # photos, audio, and most video metadata
 brew install ffmpeg         # ffprobe — fallback for .mp4 and .mov video files
 ```
 
-Supported formats: `.heic`, `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`
+Default formats: `.heic`, `.jpeg`, `.jpg`, `.mov`, `.mp3`, `.mp4`, `.png`.
+Use `extensionFilter` to replace or extend this set with custom extensions.
 
 Files without parseable date metadata are silently skipped — never crash.
 
@@ -49,12 +50,14 @@ configureMetadataTools({
 ```ts
 import {
   organizeFolder,
+  Mode,
+  ExtensionFilterMode,
   type OrganizeOptions,
   type OrganizeSummary,
-  type Mode,
 } from "foldnize";
 // CommonJS works too: const { organizeFolder } = require("foldnize");
 
+const abortController = new AbortController();
 const summary: OrganizeSummary = organizeFolder({
   root: "/Users/you/Pictures/2023",
   mode: Mode.CUSTOM, // Mode.PREFIX | Mode.REPLACE | Mode.CUSTOM
@@ -62,6 +65,10 @@ const summary: OrganizeSummary = organizeFolder({
   organizeIntoYearMonth: true, // move files into <root>/YYYY/MM/
   scanSubfolders: true, // recurse (default); false = top-level only
   maxFiles: 50, // default; use 1–1000 or -1 for unlimited
+  extensionFilter: {
+    mode: ExtensionFilterMode.EXTEND, // DEFAULT | ONLY | EXTEND
+    extensions: ["raw", ".gif"],
+  },
   dryRun: true, // preview only — no disk writes
   onLog: ({ level, message }) => console.log(`[${level}] ${message}`),
   onProgress: ({ phase, processed, total, currentFile }) =>
@@ -116,6 +123,10 @@ import {
   DEFAULT_FILE_LIMIT, // 50
   MAX_FILE_LIMIT, // 1000
   UNLIMITED_FILE_LIMIT, // -1
+  ExtensionFilterMode, // "default" | "only" | "extend"
+  parseExtensionList, // "raw, .gif" => [".gif", ".raw"]
+  normalizeCustomExtensions,
+  resolveExtensionFilter,
   type DateParts,
   type Mode,
   type LogEntry,
@@ -137,6 +148,8 @@ npx foldnize --root=./photos --mode=custom --custom-name=vacation
 npx foldnize --root=./photos --year-month --no-subfolders
 npx foldnize --root=./photos --limit=100 --dry-run
 npx foldnize --root=./photos --limit=-1 --dry-run # unlimited
+npx foldnize --root=./photos --extensions=raw,.gif # defaults + custom
+npx foldnize --root=./photos --extensions=raw --extension-mode=only
 ```
 
 ### Options
@@ -148,6 +161,8 @@ npx foldnize --root=./photos --limit=-1 --dry-run # unlimited
 --year-month              Move files into <root>/YYYY/MM/
 --no-subfolders           Don't recurse — only top-level files
 --limit=NUMBER            Process 1–1000 files (default: 50; -1 = unlimited)
+--extensions=LIST         Comma-separated custom extensions
+--extension-mode=MODE     default | only | extend (default with a list: extend)
 --dry-run                 Preview without touching disk
 --help, -h
 --version, -v
@@ -157,6 +172,7 @@ npx foldnize --root=./photos --limit=-1 --dry-run # unlimited
 
 - **macOS junk files** (`._*`) are always skipped.
 - **File limits** apply before metadata is read and also apply to dry runs. Files beyond the limit are not processed or included in `found`.
+- **Extension filters** default to the built-in formats. `only` replaces that set; `extend` combines it with normalized custom values.
 - **Collisions** are handled by appending `-1`, `-2`, … to the target name.
 - **Already-formatted files** are detected and skipped for renames; they still get moved if `--year-month` is on and their date metadata points to a different folder than where they currently sit.
 - **Empty source folders** left behind after moves are NOT deleted. That's intentionally non-destructive.

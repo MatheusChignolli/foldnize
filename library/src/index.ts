@@ -27,3 +27,10 @@ export {
   getOriginalFileDateParts,
 } from "./metadata";
 export type { MetadataToolPaths } from "./metadata";
+export {
+  ExtensionFilterMode,
+  normalizeCustomExtensions,
+  parseExtensionList,
+  resolveExtensionFilter,
+} from "./extensions";
+export type { ExtensionFilterOptions } from "./extensions";

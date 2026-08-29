@@ -500,7 +500,9 @@
                 <code>.heic</code>, <code>.jpeg</code>, <code>.jpg</code>,
                 <code>.mov</code>, <code>.mp3</code>, <code>.mp4</code>, and
                 <code>.png</code> files. Already-formatted files and macOS junk
-                (<code>._*</code>) are skipped automatically.
+                (<code>._*</code>) are skipped automatically. Choose the
+                defaults, only your comma-separated extensions, or combine
+                both sets.
               </p>
             </article>
           </div>
@@ -641,6 +643,10 @@
   organizeIntoYearMonth: <span class="tok-keyword">true</span>,   <span class="tok-comment">// move into &lt;root&gt;/YYYY/MM/</span>
   scanSubfolders: <span class="tok-keyword">true</span>,          <span class="tok-comment">// recurse (default); false = top-level only</span>
   maxFiles: 50,                       <span class="tok-comment">// 1–1000; -1 = unlimited</span>
+  extensionFilter: {
+    mode: <span class="tok-string">"extend"</span>,              <span class="tok-comment">// "default" | "only" | "extend"</span>
+    extensions: [<span class="tok-string">"raw"</span>, <span class="tok-string">"gif"</span>],
+  },
   dryRun: <span class="tok-keyword">true</span>,
   onLog: ({ message }) =&gt; <span class="tok-fn">console</span>.log(message),
 });</code></pre>

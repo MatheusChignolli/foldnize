@@ -12,6 +12,7 @@ export function walk(
   dir: string,
   scanSubfolders: boolean,
   maxFiles = -1,
+  validExtensions: ReadonlySet<string> = VALID_EXTENSIONS,
 ): string[] {
   const files: string[] = [];
 
@@ -35,7 +36,7 @@ export function walk(
       if (entry.name.startsWith("._")) continue;
 
       const ext = path.extname(entry.name).toLowerCase();
-      if (VALID_EXTENSIONS.has(ext)) {
+      if (validExtensions.has(ext)) {
         files.push(fullPath);
       }
     }

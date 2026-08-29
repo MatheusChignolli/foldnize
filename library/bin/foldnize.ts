@@ -8,6 +8,8 @@ import {
   LogLevel,
   Mode,
   DEFAULT_FILE_LIMIT,
+  ExtensionFilterMode,
+  parseExtensionList,
   formatSupportedExtensions,
   type LogEntry,
 } from "../src";
@@ -35,6 +37,9 @@ interface CliOptions {
   organizeIntoYearMonth: boolean;
   scanSubfolders: boolean;
   maxFiles: number;
+  extensionMode: ExtensionFilterMode;
+  customExtensions?: string[];
+  extensionModeExplicit: boolean;
   help: boolean;
   version: boolean;
 }
@@ -52,6 +57,9 @@ function parseArgs(argv: readonly string[]): CliOptions {
     organizeIntoYearMonth: false,
     scanSubfolders: true,
     maxFiles: DEFAULT_FILE_LIMIT,
+    extensionMode: ExtensionFilterMode.DEFAULT,
+    customExtensions: undefined,
+    extensionModeExplicit: false,
     help: false,
     version: false,
   };
@@ -73,6 +81,21 @@ function parseArgs(argv: readonly string[]): CliOptions {
         throw new Error("--limit must be -1 (unlimited) or an integer from 1 to 1000.");
       }
       args.maxFiles = Number(rawValue);
+    } else if (arg.startsWith("--extensions=")) {
+      const rawValue = arg.split("=").slice(1).join("=").trim();
+      args.customExtensions = parseExtensionList(rawValue);
+      if (args.customExtensions.length === 0) {
+        throw new Error("--extensions requires at least one extension.");
+      }
+    } else if (arg.startsWith("--extension-mode=")) {
+      const value = arg.split("=").slice(1).join("=").trim().toLowerCase();
+      if (!Object.values(ExtensionFilterMode).includes(value as ExtensionFilterMode)) {
+        throw new Error(
+          '--extension-mode must be "default", "only", or "extend".',
+        );
+      }
+      args.extensionMode = value as ExtensionFilterMode;
+      args.extensionModeExplicit = true;
     } else if (arg.startsWith("--mode=")) {
       const rawValue = arg.split("=")[1];
       const value = rawValue?.trim().toLowerCase();
@@ -94,6 +117,10 @@ function parseArgs(argv: readonly string[]): CliOptions {
     }
   }
 
+  if (args.customExtensions && !args.extensionModeExplicit) {
+    args.extensionMode = ExtensionFilterMode.EXTEND;
+  }
+
   return args;
 }
 
@@ -112,6 +139,8 @@ Options:
   --year-month              Also move files into <root>/YYYY/MM/ subfolders
   --no-subfolders           Don't recurse — only top-level files
   --limit=NUMBER            Process at most 1–1000 files (default: 50; -1: unlimited)
+  --extensions=LIST         Comma-separated custom extensions (for example: raw,.gif)
+  --extension-mode=MODE     default | only | extend (custom list defaults to extend)
   --dry-run                 Preview changes without touching disk
   --help, -h                Show this help
   --version, -v             Show version
@@ -127,6 +156,7 @@ Examples:
   foldnize --root=./photos --mode=custom --custom-name=vacation
   foldnize --root=./photos --year-month --no-subfolders
   foldnize --root=./photos --limit=100 --dry-run
+  foldnize --root=./photos --extensions=raw,.gif --extension-mode=extend
 
 Supported formats:
   ${formatSupportedExtensions()}
@@ -258,6 +288,10 @@ function main(): void {
       organizeIntoYearMonth: options.organizeIntoYearMonth,
       scanSubfolders: options.scanSubfolders,
       maxFiles: options.maxFiles,
+      extensionFilter: {
+        mode: options.extensionMode,
+        extensions: options.customExtensions,
+      },
       onLog: logEntry,
     });
 

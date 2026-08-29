@@ -14,6 +14,7 @@ import type {
   OrganizeSummary,
 } from "../src/organize";
 import { Mode, type DateParts } from "../src/naming";
+import { ExtensionFilterMode } from "../src/extensions";
 import {
   __setDateReaderForTests,
   __resetDateReaderForTests,
@@ -118,6 +119,15 @@ test("organizeFolder — validation errors", () => {
       run: () => organizeFolder({ root, maxFiles }),
       message: /maxFiles must be -1 .* or an integer from 1 to 1000/i,
     })),
+    {
+      name: "only mode without custom extensions",
+      run: () =>
+        organizeFolder({
+          root,
+          extensionFilter: { mode: ExtensionFilterMode.ONLY },
+        }),
+      message: /requires at least one extension/i,
+    },
   ] as const;
 
   for (const { name, run, message } of cases) {
@@ -484,6 +494,50 @@ test("organizeFolder — dry-run logs use DRY level", () => {
       (e) => e.level === LogLevel.DRY && e.message.includes("[DRY]"),
     ),
   );
+});
+
+test("organizeFolder — default, only, and extended extension filters", () => {
+  const cases = [
+    {
+      name: "default formats",
+      extensionFilter: undefined,
+      expectedFound: 1,
+    },
+    {
+      name: "custom formats only",
+      extensionFilter: {
+        mode: ExtensionFilterMode.ONLY,
+        extensions: ["gif"],
+      },
+      expectedFound: 1,
+    },
+    {
+      name: "defaults plus custom formats",
+      extensionFilter: {
+        mode: ExtensionFilterMode.EXTEND,
+        extensions: ["gif"],
+      },
+      expectedFound: 2,
+    },
+  ] as const;
+
+  for (const { name, extensionFilter, expectedFound } of cases) {
+    clearRoot();
+    writeFile("photo.jpg");
+    writeFile("animation.gif");
+
+    const summary = withFakeMetadata(
+      { "photo.jpg": STAMP, "animation.gif": STAMP },
+      () =>
+        organizeFolder({
+          root,
+          dryRun: true,
+          extensionFilter,
+        }),
+    );
+
+    assert.equal(summary.found, expectedFound, name);
+  }
 });
 
 test("organizeFolder — reports structured progress from scan through completion", () => {
