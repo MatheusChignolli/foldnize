@@ -25,6 +25,7 @@ This package is a thin UI shell on top of the [`foldnize`](https://www.npmjs.com
   finish before stopping the run.
 - Local persistence for the last folder and organization options, restored on
   the next launch with validated fallbacks.
+- Explicit confirmation with a configuration summary before every non-dry run.
 - Responsive background processing: the window remains scrollable while a run
   is active, with controls disabled until it finishes.
 - Safe collision handling (`-1`, `-2`, … suffixes).

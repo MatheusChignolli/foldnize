@@ -306,6 +306,47 @@
       </section>
     </main>
 
+    <dialog
+      class="confirm-dialog"
+      id="confirm-real-run"
+      aria-labelledby="confirm-real-run-title"
+    >
+      <form method="dialog">
+        <span class="confirm-icon" aria-hidden="true">!</span>
+        <h2 id="confirm-real-run-title">Apply changes to your files?</h2>
+        <p class="muted">
+          Dry run is off. Foldnize may rename and move files on disk using the
+          options below.
+        </p>
+        <dl class="confirm-details">
+          <div>
+            <dt>Folder</dt>
+            <dd id="confirm-folder"></dd>
+          </div>
+          <div>
+            <dt>Mode</dt>
+            <dd id="confirm-mode"></dd>
+          </div>
+          <div>
+            <dt>Maximum files</dt>
+            <dd id="confirm-limit"></dd>
+          </div>
+          <div>
+            <dt>Year/Month folders</dt>
+            <dd id="confirm-year-month"></dd>
+          </div>
+        </dl>
+        <div class="confirm-actions">
+          <button class="btn btn-ghost" value="cancel" autofocus>
+            Go back
+          </button>
+          <button class="btn btn-danger" value="confirm">
+            Apply changes
+          </button>
+        </div>
+      </form>
+    </dialog>
+
     <script type="module" src="renderer.js"></script>
   </body>
 </html>

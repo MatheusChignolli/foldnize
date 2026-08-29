@@ -129,6 +129,17 @@ const unlimitedFilesEl = document.getElementById(
 const fileLimitFeedback = document.getElementById(
   "file-limit-feedback",
 ) as HTMLParagraphElement;
+const confirmDialog = document.getElementById(
+  "confirm-real-run",
+) as HTMLDialogElement;
+const confirmFolderEl = document.getElementById(
+  "confirm-folder",
+) as HTMLElement;
+const confirmModeEl = document.getElementById("confirm-mode") as HTMLElement;
+const confirmLimitEl = document.getElementById("confirm-limit") as HTMLElement;
+const confirmYearMonthEl = document.getElementById(
+  "confirm-year-month",
+) as HTMLElement;
 
 const state: RendererState = {
   folderPath: null,
@@ -222,6 +233,18 @@ runBtn.addEventListener("click", async () => {
   const scanSubfolders = scanSubfoldersEl.checked;
   const maxFiles = unlimitedFilesEl.checked ? -1 : fileLimitEl.valueAsNumber;
 
+  if (
+    !dryRun &&
+    !(await confirmRealRun({
+      folderPath: state.folderPath,
+      mode,
+      maxFiles,
+      organizeIntoYearMonth,
+    }))
+  ) {
+    return;
+  }
+
   clearLog();
   hideSummary();
   resetProgress();
@@ -292,6 +315,36 @@ function getMode(): Mode {
   const value = checked?.value;
   if (value === "replace" || value === "custom") return value as Mode;
   return MODE.PREFIX;
+}
+
+interface RealRunConfirmation {
+  folderPath: string;
+  mode: Mode;
+  maxFiles: number;
+  organizeIntoYearMonth: boolean;
+}
+
+function confirmRealRun(details: RealRunConfirmation): Promise<boolean> {
+  confirmFolderEl.textContent = details.folderPath;
+  confirmModeEl.textContent =
+    details.mode === MODE.CUSTOM
+      ? `Custom (${getSanitizedCustomName(customInput.value)})`
+      : details.mode === MODE.REPLACE
+        ? "Replace"
+        : "Prefix";
+  confirmLimitEl.textContent =
+    details.maxFiles === -1 ? "Unlimited" : String(details.maxFiles);
+  confirmYearMonthEl.textContent = details.organizeIntoYearMonth ? "Yes" : "No";
+  confirmDialog.returnValue = "cancel";
+  confirmDialog.showModal();
+
+  return new Promise((resolve) => {
+    confirmDialog.addEventListener(
+      "close",
+      () => resolve(confirmDialog.returnValue === "confirm"),
+      { once: true },
+    );
+  });
 }
 
 function persistSettings(): void {
