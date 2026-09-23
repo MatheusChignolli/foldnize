@@ -303,6 +303,9 @@ runBtn.addEventListener("click", async () => {
 
     if (response.ok) {
       showSummary(response.summary);
+      if (response.summary.cancelled) {
+        clearProgress();
+      }
     }
   } catch (error) {
     appendLog({
@@ -694,6 +697,15 @@ function resetProgress(): void {
   progressBarEl.removeAttribute("value");
   progressBarEl.max = 1;
   progressLabelEl.textContent = "Scanning supported files…";
+  progressCountEl.textContent = "";
+  progressFileEl.textContent = "";
+}
+
+function clearProgress(): void {
+  progressEl.hidden = true;
+  progressBarEl.removeAttribute("value");
+  progressBarEl.max = 1;
+  progressLabelEl.textContent = "Preparing…";
   progressCountEl.textContent = "";
   progressFileEl.textContent = "";
 }

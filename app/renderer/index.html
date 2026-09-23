@@ -101,6 +101,10 @@
           <div class="radio-group">
             <label class="radio">
               <input type="radio" name="mode" value="prefix" checked />
+              <span
+                class="control-indicator radio-indicator"
+                aria-hidden="true"
+              ></span>
               <div class="radio-body">
                 <strong>Prefix</strong>
                 <span class="muted"
@@ -112,6 +116,10 @@
 
             <label class="radio">
               <input type="radio" name="mode" value="replace" />
+              <span
+                class="control-indicator radio-indicator"
+                aria-hidden="true"
+              ></span>
               <div class="radio-body">
                 <strong>Replace</strong>
                 <span class="muted"
@@ -122,6 +130,10 @@
 
             <label class="radio">
               <input type="radio" name="mode" value="custom" />
+              <span
+                class="control-indicator radio-indicator"
+                aria-hidden="true"
+              ></span>
               <div class="radio-body">
                 <strong>Custom</strong>
                 <span class="muted"
@@ -164,7 +176,11 @@
         <div class="option-group">
           <label class="checkbox">
             <input type="checkbox" id="organize-year-month" />
-            <span>
+            <span
+              class="control-indicator checkbox-indicator"
+              aria-hidden="true"
+            ></span>
+            <span class="checkbox-copy">
               <strong>Sort into Year/Month folders</strong>
               <span class="muted"
                 >Move each file into <code>YYYY/MM/</code> based on its date.
@@ -177,7 +193,11 @@
         <div class="option-group">
           <label class="checkbox">
             <input type="checkbox" id="scan-subfolders" checked />
-            <span>
+            <span
+              class="control-indicator checkbox-indicator"
+              aria-hidden="true"
+            ></span>
+            <span class="checkbox-copy">
               <strong>Include files in subfolders</strong>
               <span class="muted"
                 >Scan every subfolder recursively. Turn off to only process
@@ -240,7 +260,11 @@
             </div>
             <label class="checkbox checkbox-compact">
               <input type="checkbox" id="unlimited-files" />
-              <span><strong>No limit</strong></span>
+              <span
+                class="control-indicator checkbox-indicator"
+                aria-hidden="true"
+              ></span>
+              <span class="checkbox-copy"><strong>No limit</strong></span>
             </label>
           </div>
           <p class="field-help muted" id="file-limit-help">
@@ -259,7 +283,11 @@
         <div class="option-group">
           <label class="checkbox">
             <input type="checkbox" id="dry-run" checked />
-            <span>
+            <span
+              class="control-indicator checkbox-indicator"
+              aria-hidden="true"
+            ></span>
+            <span class="checkbox-copy">
               <strong>Dry run</strong>
               <span class="muted"
                 >Preview changes without touching any file.</span

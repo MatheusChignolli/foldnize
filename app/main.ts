@@ -1,6 +1,7 @@
 import {
   app,
   BrowserWindow,
+  Menu,
   ipcMain,
   dialog,
   nativeImage,
@@ -163,6 +164,7 @@ function setDockIcon(): void {
 
 function createWindow(): void {
   const isMac = process.platform === "darwin";
+  const isWindows = process.platform === "win32";
 
   mainWindow = new BrowserWindow({
     width: 960,
@@ -172,6 +174,7 @@ function createWindow(): void {
     backgroundColor: "#0f1115",
     title: "Foldnize",
     titleBarStyle: isMac ? "hiddenInset" : "default",
+    autoHideMenuBar: isWindows,
     trafficLightPosition: isMac ? { x: 22, y: 30 } : undefined,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -190,6 +193,9 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   setDockIcon();
+  if (process.platform === "win32") {
+    Menu.setApplicationMenu(null);
+  }
   createWindow();
 
   app.on("activate", () => {
