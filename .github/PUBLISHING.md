@@ -22,34 +22,32 @@ git commit -m "chore: track library package-lock for CI"
 
 ---
 
-## GitHub configuration (required)
+## npm and GitHub configuration (required)
 
-### 1. Repository secret
+The publish workflow uses npm Trusted Publishing with GitHub's short-lived OIDC
+identity. It does not use an `NPM_TOKEN` or any other long-lived publish secret.
 
-Add this under **Settings → Secrets and variables → Actions → Repository secrets**:
+### 1. Trusted Publisher on npm
 
-| Secret name | Description |
-| ----------- | ----------- |
-| `NPM_TOKEN` | npm automation token with permission to publish `foldnize` |
+Open the [`foldnize` package settings on npm](https://www.npmjs.com/package/foldnize/access),
+find **Trusted Publisher**, choose **GitHub Actions**, and enter:
 
-#### How to create `NPM_TOKEN`
+| Field | Value |
+| ----- | ----- |
+| Organization or user | `MatheusChignolli` |
+| Repository | `foldnize` |
+| Workflow filename | `publish-npm.yml` |
+| Environment | `npm` |
+| Allowed action | Direct publish with `npm publish` |
 
-1. Log in at [https://www.npmjs.com](https://www.npmjs.com).
-2. Go to **Access Tokens** → **Generate New Token**.
-3. Choose **Granular Access Token** (recommended):
-   - **Packages and scopes:** Read and write for `foldnize` (or all packages if this is your only publish).
-   - **Organizations:** none, unless you publish under a scope.
-   - If your npm account has **2FA required for publishing**, enable **Bypass 2FA for automation** on this token (otherwise CI gets `403 Forbidden`).
-   - Expiration: your choice (90 days or custom).
-4. Or use **Classic** → type **Automation** (for CI/CD; bypasses publish 2FA).
-5. Copy the token once — you will not see it again.
-6. In GitHub: **Repository → Settings → Secrets and variables → Actions → New repository secret**
-   - Name: `NPM_TOKEN`
-   - Value: paste the token
+The workflow grants only `contents: read` and `id-token: write`. npm exchanges
+that GitHub identity for a short-lived publishing credential and creates the
+provenance attestation automatically.
 
-> Never commit the token. Do not put it in `package.json` or workflow files.
+After Trusted Publishing works, remove any obsolete `NPM_TOKEN` secret from the
+repository and from the `npm` environment.
 
-### 2. GitHub Environment (recommended)
+### 2. GitHub Environment
 
 The publish workflow uses an environment named **`npm`** so you can add protection rules.
 
@@ -62,11 +60,12 @@ The publish workflow uses an environment named **`npm`** so you can add protecti
 
 If you skip creating the environment, GitHub will create it on first run (without rules).
 
-### 3. Variables (optional)
+### 3. Variables and secrets
 
-No repository **variables** are required for the current workflow. Everything uses `NPM_TOKEN` only.
-
-If you later publish under a scope (e.g. `@matheuschignolli/foldnize`), you would update `library/package.json` `name` and keep using the same `NPM_TOKEN` with access to that scope.
+No repository variables or npm authentication secrets are required. If the
+package later moves under a scope, update the trusted publisher on npm; do not
+reintroduce a long-lived publish token. The environment name must remain `npm`
+because it is part of the trusted-publisher identity configured on npmjs.com.
 
 ---
 
@@ -113,23 +112,10 @@ No tag/version check on manual runs; `package.json` `version` is what gets publi
 3. `npm run typecheck`  
 4. `npm test`  
 5. `npm run build`  
-6. `npm publish --provenance --access public`  
-   - `prepublishOnly` rebuilds `dist/` and sets the CLI executable bit  
+6. `npm publish --access public` through OIDC Trusted Publishing
+   - `prepublishOnly` rebuilds `dist/` and sets the CLI executable bit
    - Only `dist/` and `README.md` are included in the tarball (`files` in `package.json`)
-
----
-
-## npm trusted publishing (optional)
-
-For stronger supply-chain guarantees, link the package to this repo on npm:
-
-1. npm package page → **Settings** → enable **Trusted Publisher**
-2. Provider: **GitHub Actions**
-3. Repository: `matheuschignolli/foldnize` (adjust if different)
-4. Workflow: `publish-npm.yml`
-5. Environment: `npm`
-
-Then you can restrict publishes so only this workflow can publish new versions.
+   - npm creates the provenance statement automatically
 
 ---
 
@@ -137,9 +123,9 @@ Then you can restrict publishes so only this workflow can publish new versions.
 
 | Error | Likely fix |
 | ----- | ---------- |
-| `ENEEDAUTH` / 401 | `NPM_TOKEN` missing, expired, or wrong permissions |
-| `403 Forbidden` — *Two-factor authentication or granular access token with bypass 2fa enabled is required* | Regenerate `NPM_TOKEN`: use a **Classic Automation** token, or a **Granular** token with **Bypass 2FA for automation** and publish access to `foldnize`. A normal **Publish** or **Read-only** token will not work in CI. |
-| `403 Forbidden` (other) | Token cannot publish `foldnize`; verify package name ownership on npm |
+| `ENEEDAUTH`, `401`, or `404` during publish | Confirm the npm Trusted Publisher matches user `MatheusChignolli`, repository `foldnize`, workflow `publish-npm.yml`, and environment `npm` exactly |
+| Trusted publisher rejects `npm publish` | Edit its allowed actions on npm and enable direct `npm publish`; otherwise switch the workflow intentionally to staged publishing |
+| Trusted publishing requires a newer npm | Keep Node 24 and npm 11.5.1 or newer; the workflow checks this before installing dependencies |
 | `No bin file found at dist/bin/foldnize.js` (warn) | Harmless if `prepublishOnly` runs; the publish workflow also runs `npm run build` before `npm publish` so the bin exists when npm validates `package.json` |
 | `You cannot publish over the same version` | Bump `version` in `library/package.json` |
 | Tag / version mismatch | Release tag must be `foldnize-v1.0.1` when `package.json` says `1.0.1` |
@@ -156,4 +142,5 @@ npm test
 npm publish --access public
 ```
 
-After the package exists on npm under your account, CI can publish subsequent versions with `NPM_TOKEN`.
+Manual local publishing still requires an interactive npm login and any 2FA
+challenge required by the package. Automated releases use OIDC instead.

@@ -32,15 +32,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
-          cache: npm
-          cache-dependency-path: library/package-lock.json
+          package-manager-cache: false
+
+      - name: Verify trusted publishing support
+        run: |
+          NPM_VERSION=$(npm --version)
+          node -e "const version=process.argv[1]; const [major,minor,patch]=version.split(/[.-]/).map(Number); const supported=major>11 || (major===11 && (minor>5 || (minor===5 && patch>=1))); if (!supported) { console.error('Trusted publishing requires npm 11.5.1 or newer. Found npm '+version); process.exit(1); }" "$NPM_VERSION"
+          echo "Using npm $NPM_VERSION with OIDC trusted publishing"
 
       - name: Install dependencies
         run: npm ci
@@ -75,6 +80,4 @@ jobs:
           echo "Publishing foldnize@$PKG_VERSION"
 
       - name: Publish to npm
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public

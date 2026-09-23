@@ -183,7 +183,10 @@ npx foldnize --root=./photos --extensions=raw --extension-mode=only
 
 ## Publishing
 
-Releases to npm are automated via GitHub Actions when you publish a GitHub Release. See [`.github/PUBLISHING.md`](../.github/PUBLISHING.md) for the `NPM_TOKEN` secret, environment setup, and release tags like `foldnize-v1.0.0`.
+Releases to npm are automated via GitHub Actions with OIDC Trusted Publishing
+when you publish a GitHub Release. See
+[`.github/PUBLISHING.md`](../.github/PUBLISHING.md) for the one-time npm trusted
+publisher setup, GitHub environment, and release tags like `foldnize-v1.0.0`.
 
 ## Development
 
