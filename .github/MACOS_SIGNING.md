@@ -38,7 +38,7 @@ Replace the example filenames with the actual filenames.
 ## Publish and verify
 
 Publish a new GitHub release using a tag that matches the app version, for
-example `foldnize-app-v1.0.2`. The workflow signs the `.app`, submits it to
+example `foldnize-app-v1.0.3`. The workflow signs the `.app`, submits it to
 Apple's notary service, staples the notarization ticket, and packages the DMG.
 
 After downloading the release artifact on a Mac, verify it with:
