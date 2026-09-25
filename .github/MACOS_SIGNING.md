@@ -51,3 +51,15 @@ xcrun stapler validate /Applications/Foldnize.app
 
 The Gatekeeper assessment should report `accepted` and identify the source as
 `Notarized Developer ID`.
+
+## Troubleshooting
+
+If the macOS job fails in `security set-key-partition-list` with
+`SecKeychainUnlock: The user name or passphrase you entered is not correct`,
+confirm that the workflow installed `electron-builder` 26.16.1 or newer. Older
+versions passed the certificate password where macOS expects the temporary
+keychain password, which fails on macOS 26 ARM runners.
+
+If the failure instead happens during `security import`, regenerate
+`MAC_CERTIFICATE_BASE64` from the original `.p12` and verify that
+`MAC_CERTIFICATE_PASSWORD` is exactly the password used when exporting it.
